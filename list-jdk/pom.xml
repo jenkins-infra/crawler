@@ -1,11 +1,10 @@
 <?xml version="1.0"?><project>
   <parent>
-    <artifactId>backend</artifactId>
+    <artifactId>crawler</artifactId>
     <groupId>org.jvnet.hudson</groupId>
     <version>1.7</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.jvnet.hudson</groupId>
   <artifactId>list-jdk</artifactId>
   <name>list-jdk</name>
   <version>1.0-SNAPSHOT</version>
@@ -13,73 +12,4 @@
     This runs on http://hudson.sfbay/view/Hudson/job/hudson-jdk-list/ regularly to publish
     the list of JDKs to https://hudson.dev.java.net/jdk.json
   </description>
-  
-  <dependencies>
-    <dependency>
-      <groupId>org.jvnet.hudson</groupId>
-      <artifactId>htmlunit</artifactId>
-      <version>2.2-hudson-9</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.kohsuke.stapler</groupId>
-      <artifactId>json-lib</artifactId>
-      <version>2.1</version>
-      <classifier>jdk15</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-      <version>1.6.0</version>
-    </dependency>
-  </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>build</id>
-            <goals>
-              <goal>generateStubs</goal>
-              <goal>compile</goal>
-              <goal>generateTestStubs</goal>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>run</id>
-            <phase>test</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-            <configuration>
-              <source>${project.basedir}/src/main/groovy/App.groovy</source>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
-  <repositories>
-    <repository>
-      <id>m.g.o-public</id>
-      <url>http://maven.glassfish.org/content/groups/public/</url>
-    </repository>
-  </repositories>
 </project>
