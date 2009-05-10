@@ -30,10 +30,10 @@ def store(key,jsonp,o) {
         // if we run from GMaven during a build, put that out in a file as well, with the JSONP support
         File d = new File(project.basedir, "target")
         d.mkdirs()
-        new File(d,"${key}.json").write("${jsonp}(${envelope.toString()})");
+        new File(d,"${key}.json").write("downloadService.post('${jsonp}',${envelope.toString()})");
     }
 }
 
 
-store("ant","listOfAnts",    listUp("http://archive.apache.org/dist/ant/binaries/","ant-(.+)-bin.zip\$"))
-store("maven","listOfMavens",listUp("http://archive.apache.org/dist/maven/binaries/","maven-([0-9.]+)(-bin)?.zip\$"))
+store("ant",  "hudson.tools.AntInstaller",  listUp("http://archive.apache.org/dist/ant/binaries/",  "ant-(.+)-bin.zip\$"))
+store("maven","hudson.tools.MavenInstaller",listUp("http://archive.apache.org/dist/maven/binaries/","maven-([0-9.]+)(-bin)?.zip\$"))
