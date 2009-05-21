@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>crawler</artifactId>
-  <name>Hudson Backend Stuff</name>
+  <name>Tool Crawler</name>
   <packaging>pom</packaging>
   <description>Code that we use behind the scene.</description>
 
