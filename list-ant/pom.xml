@@ -12,4 +12,13 @@
     This runs on http://hudson.sfbay/view/Hudson/job/hudson-jdk-list/ regularly to publish
     the list of JDKs to https://hudson.dev.java.net/jdk.json
   </description>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.groovy.maven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>

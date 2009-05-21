@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>crawler</artifactId>
-  <name>Hudson Backedn Stuff</name>
+  <name>Hudson Backend Stuff</name>
   <packaging>pom</packaging>
   <description>Code that we use behind the scene.</description>
 
@@ -38,23 +38,25 @@
   </dependencies>
 
   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>test</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-            <configuration>
-              <source>${project.basedir}/src/main/groovy/App.groovy</source>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.groovy.maven</groupId>
+          <artifactId>gmaven-plugin</artifactId>
+          <executions>
+            <execution>
+              <phase>test</phase>
+              <goals>
+                <goal>execute</goal>
+              </goals>
+              <configuration>
+                <source>${project.basedir}/src/main/groovy/App.groovy</source>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <repositories>
