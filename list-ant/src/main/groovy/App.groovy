@@ -16,24 +16,24 @@ def listUp(url,pattern) {
         if(m.find()) {
             ver=m.group(1)
             url = p.getFullyQualifiedUrl(a.hrefAttribute);
-            return ["version":ver, "url":url.toExternalForm()]
+            return ["id":ver, "name":ver, "url":url.toExternalForm()]
         }
         return null;
     }.findAll { it!=null }
 }
 
-def store(key,jsonp,o) {
-    JSONObject envelope = JSONObject.fromObject(["${key}": o]);
+def store(key,o) {
+    JSONObject envelope = JSONObject.fromObject(["list": o]);
     println envelope.toString(2)
 
     if(project!=null) {
         // if we run from GMaven during a build, put that out in a file as well, with the JSONP support
         File d = new File(project.basedir, "target")
         d.mkdirs()
-        new File(d,"${key}.json").write("downloadService.post('${jsonp}',${envelope.toString()})");
+        new File(d,"${key}.json").write("downloadService.post('${key}',${envelope.toString()})");
     }
 }
 
 
-store("ant",  "hudson.tools.AntInstaller",  listUp("http://archive.apache.org/dist/ant/binaries/",  "ant-(.+)-bin.zip\$"))
-store("maven","hudson.tools.MavenInstaller",listUp("http://archive.apache.org/dist/maven/binaries/","maven-([0-9.]+)(-bin)?.zip\$"))
+store("hudson.tools.Ant.AntInstaller",  listUp("http://archive.apache.org/dist/ant/binaries/",  "ant-(.+)-bin.zip\$"))
+store("hudson.tools.Maven.MavenInstaller",listUp("http://archive.apache.org/dist/maven/binaries/","maven-([0-9.]+)(-bin)?.zip\$"))
