@@ -3,6 +3,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlAnchor
 import com.gargoylesoftware.htmlunit.html.HtmlPage
 import java.util.regex.Pattern
 import net.sf.json.JSONObject
+import hudson.util.VersionNumber
 
 def listUp(url,pattern) {
     wc = new WebClient()
@@ -19,7 +20,7 @@ def listUp(url,pattern) {
             return ["id":ver, "name":ver, "url":url.toExternalForm()]
         }
         return null;
-    }.findAll { it!=null }
+    }.findAll { it!=null }.sort{ o1,o2 -> -new VersionNumber(o1.id).compareTo(new VersionNumber(o2.id)) };
 }
 
 def store(key,o) {
