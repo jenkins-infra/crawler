@@ -52,8 +52,8 @@ JSONArray listFamily(HtmlPage p, Family f) throws Exception {
 
     JSONArray jdks = new JSONArray();
 
+    /* in case latest release is not listed on the archive page:
     if(f.name=="JDK 6") {
-        // pick up the latest release from http://java.sun.com/javase/downloads/ since it's not listed in the archive page
         Pattern bareJDK = Pattern.compile("jdk-6u([0-9]+)-oth-JPR");
         String pc = findProductCode(getPage("http://java.sun.com/javase/downloads/").getAnchors().find { HtmlAnchor a ->
             return bareJDK.matcher(a.getHrefAttribute()).find();
@@ -62,6 +62,7 @@ JSONArray listFamily(HtmlPage p, Family f) throws Exception {
         m.find();
         jdks << makeJDK("6 Update "+m.group(1),pc);
     }
+    */
 
     select.getOptions().collect(jdks) { HtmlOption opt ->
         return makeJDK(buildName(opt.getTextContent()),findID(opt.getValueAttribute()));
