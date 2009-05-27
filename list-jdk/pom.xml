@@ -9,7 +9,7 @@
   <name>List JDK Installations</name>
   <version>1.0-SNAPSHOT</version>
   <description>
-    This runs on http://hudson.sfbay/view/Hudson/job/hudson-jdk-list/ regularly to publish
+    This runs on http://hudson.sfbay/job/hudson-crawler/ regularly to publish
     the list of JDKs to https://hudson.dev.java.net/jdk.json
   </description>
 
