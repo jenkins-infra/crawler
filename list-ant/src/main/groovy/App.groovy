@@ -15,7 +15,7 @@ def listUp(url,pattern) {
     return p.getAnchors().collect { HtmlAnchor a ->
         m = pattern.matcher(a.hrefAttribute)
         if(m.find()) {
-            ver=m.group(1)
+            ver=m.group(1).replaceFirst("[^0-9.].*", "")
             url = p.getFullyQualifiedUrl(a.hrefAttribute);
             return ["id":ver, "name":ver, "url":url.toExternalForm()]
         }
@@ -37,4 +37,4 @@ def store(key,o) {
 
 
 store("hudson.tasks.Ant.AntInstaller",  listUp("http://archive.apache.org/dist/ant/binaries/",  "ant-(.+)-bin.zip\$"))
-store("hudson.tasks.Maven.MavenInstaller",listUp("http://archive.apache.org/dist/maven/binaries/","maven-([0-9.]+)(-bin)?.zip\$"))
+store("hudson.tasks.Maven.MavenInstaller",listUp("http://archive.apache.org/dist/maven/binaries/","maven-([0-9.]+|3[.]0-alpha-[0-9]+)(-bin)?.zip\$"))
