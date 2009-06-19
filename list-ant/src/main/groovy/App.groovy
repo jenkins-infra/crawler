@@ -15,12 +15,28 @@ def listUp(url,pattern) {
     return p.getAnchors().collect { HtmlAnchor a ->
         m = pattern.matcher(a.hrefAttribute)
         if(m.find()) {
-            ver=m.group(1).replaceFirst("[^0-9.].*", "")
+            ver=m.group(1)
             url = p.getFullyQualifiedUrl(a.hrefAttribute);
             return ["id":ver, "name":ver, "url":url.toExternalForm()]
         }
         return null;
-    }.findAll { it!=null }.sort{ o1,o2 -> -new VersionNumber(o1.id).compareTo(new VersionNumber(o2.id)) };
+    }.findAll { it!=null }.sort { o1,o2 ->
+        try {
+            def v1 = new VersionNumber(o1.id)
+            try {
+                new VersionNumber(o2.id).compareTo(v1)
+            } catch (IllegalArgumentException _2) {
+                -1
+            }
+        } catch (IllegalArgumentException _1) {
+            try {
+                new VersionNumber(o2.id)
+                1
+            } catch (IllegalArgumentException _2) {
+                o2.id.compareTo(o1.id)
+            }
+        }
+    }
 }
 
 def store(key,o) {
