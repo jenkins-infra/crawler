@@ -86,8 +86,8 @@ def buildName(String label) {
 
 def findID(String href) throws Exception {
 
-    if (href=="/products/archive/j2se/5.0_18/index.html")
-        return "jdk-1.5.0_18-oth-JPR@CDS-CDS_Developer"; // working around a bug in http://java.sun.com/products/archive/j2se/5.0_18/index.html
+    if (href=="/products/archive/j2se/5.0_19/index.html")
+        return "jdk-1.5.0_19-oth-JPR@CDS-CDS_Developer"; // 5u19 seems to have added a registration form (http://java.sun.com/products/archive/j2se/5.0_19/index.html)
 
     HtmlPage p = getPage("http://java.sun.com${href}");
     HtmlAnchor a = p.getAnchors().find { HtmlAnchor a ->
