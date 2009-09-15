@@ -19,7 +19,7 @@ class Family {
     String entryPoint;
 }
 
-ID_PATTERN = Pattern.compile("ProductRef=([^&]+)");
+ID_PATTERN = Pattern.compile("ProductRef=([^&]+)"); // this is how we find a product code
 
 wc = new WebClient()
 wc.setJavaScriptEnabled(false);
@@ -52,7 +52,7 @@ JSONArray listFamily(HtmlPage p, Family f) throws Exception {
 
     JSONArray jdks = new JSONArray();
 
-    /* in case latest release is not listed on the archive page:
+    // the latest JDK6 release is not listed on the archive page.
     if(f.name=="JDK 6") {
         Pattern bareJDK = Pattern.compile("jdk-6u([0-9]+)-oth-JPR");
         String pc = findProductCode(getPage("http://java.sun.com/javase/downloads/").getAnchors().find { HtmlAnchor a ->
@@ -62,10 +62,9 @@ JSONArray listFamily(HtmlPage p, Family f) throws Exception {
         m.find();
         jdks << makeJDK("6 Update "+m.group(1),pc);
     }
-    */
 
     select.getOptions().collect(jdks) { HtmlOption opt ->
-        return makeJDK(buildName(opt.getTextContent()),findID(opt.getValueAttribute()));
+        return makeJDK(buildName(opt.getTextContent()),findID(f,opt.getValueAttribute()));
     }
     return jdks;
 }
@@ -84,10 +83,7 @@ def buildName(String label) {
 }
 
 
-def findID(String href) throws Exception {
-
-    if (href=="/products/archive/j2se/5.0_19/index.html")
-        return "jdk-1.5.0_19-oth-JPR@CDS-CDS_Developer"; // 5u19 seems to have added a registration form (http://java.sun.com/products/archive/j2se/5.0_19/index.html)
+def findID(Family f, String href) throws Exception {
 
     HtmlPage p = getPage("http://java.sun.com${href}");
     HtmlAnchor a = p.getAnchors().find { HtmlAnchor a ->
@@ -95,8 +91,16 @@ def findID(String href) throws Exception {
         return m.find() && m.group(1).contains("dk") && !m.group(1).contains("re")
     };
 
-    if(a==null)
+    if(a==null) {
+        if (f.name=="JDK 5.0") {
+            // JDK5 started hiding links in the survey, so if we can't figure it out,
+            // assume the default naming convention
+            def m = href =~ /j2se\/5.0_([0-9]+)\/index.html/
+            if (m)
+                return "jdk-1.5.0_${m.group(1)}-oth-JPR@CDS-CDS_Developer" as String;
+        }
         throw new IllegalStateException("No JDK link in "+href);
+    }
     return findProductCode(a);
 }
 
