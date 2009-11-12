@@ -55,12 +55,19 @@ JSONArray listFamily(HtmlPage p, Family f) throws Exception {
     // the latest JDK6 release is not listed on the archive page.
     if(f.name=="JDK 6") {
         Pattern bareJDK = Pattern.compile("jdk-6u([0-9]+)-oth-JPR");
-        String pc = findProductCode(getPage("http://java.sun.com/javase/downloads/").getAnchors().find { HtmlAnchor a ->
+        HtmlAnchor a = getPage("http://java.sun.com/javase/downloads/").getAnchors().find { HtmlAnchor a ->
             return bareJDK.matcher(a.getHrefAttribute()).find();
-        });
-        Matcher m = bareJDK.matcher(pc)
-        m.find();
-        jdks << makeJDK("6 Update "+m.group(1),pc);
+        };
+        if (a == null) {
+            // XXX only links to http://java.sun.com/javase/downloads/widget/jdk6.jsp
+            // which has some JavaScript and a form, but no matching <a href=...>
+            System.err.println("Warning: no JDK link in http://java.sun.com/javase/downloads/");
+        } else {
+            String pc = findProductCode(a);
+            Matcher m = bareJDK.matcher(pc)
+            m.find();
+            jdks << makeJDK("6 Update "+m.group(1),pc);
+        }
     }
 
     select.getOptions().collect(jdks) { HtmlOption opt ->
