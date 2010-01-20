@@ -67,9 +67,11 @@ JSONArray listFamily(HtmlPage p, Family f) throws Exception {
             m.find();
             jdks << makeJDK("6 Update "+m.group(1),pc);
         }
-    } else if (f.name == 'JDK 5') {
-        // XXX HUDSON-5327 5u22 not available without filling out a form:
+    } else if (f.name == 'JDK 5.0') {
+        // 5u22 not available without filling out a form:
         // https://dct.sun.com/dct/forms/reg_us_0809_958_0.jsp
+        // So just hardcode it. At EOSL so probably will be last one.
+        jdks << makeJDK("5.0 Update 22", "jdk-1.5.0_22-oth-JPR@CDS-CDS_Developer");
     }
 
     select.getOptions().collect(jdks) { HtmlOption opt ->
