@@ -3,6 +3,7 @@
  */
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.gargoylesoftware.htmlunit.html.HtmlOption;
@@ -52,22 +53,23 @@ JSONArray listFamily(HtmlPage p, Family f) throws Exception {
 
     JSONArray jdks = new JSONArray();
 
-    // the latest JDK6 release is not listed on the archive page.
+    // the latest JDK 5 & 6 releases are not listed on the archive page.
     if(f.name=="JDK 6") {
         Pattern bareJDK = Pattern.compile("jdk-6u([0-9]+)-oth-JPR");
-        HtmlAnchor a = getPage("http://java.sun.com/javase/downloads/").getAnchors().find { HtmlAnchor a ->
-            return bareJDK.matcher(a.getHrefAttribute()).find();
+        HtmlForm form = getPage("http://java.sun.com/javase/downloads/widget/jdk6.jsp").forms.find { HtmlForm form ->
+            return bareJDK.matcher(form.actionAttribute).find();
         };
-        if (a == null) {
-            // XXX only links to http://java.sun.com/javase/downloads/widget/jdk6.jsp
-            // which has some JavaScript and a form, but no matching <a href=...>
-            System.err.println("Warning: no JDK link in http://java.sun.com/javase/downloads/");
+        if (form == null) {
+            System.err.println("Warning: no JDK link in http://java.sun.com/javase/downloads/widget/jdk6.jsp");
         } else {
-            String pc = findProductCode(a);
+            String pc = findProductCode(form.actionAttribute);
             Matcher m = bareJDK.matcher(pc)
             m.find();
             jdks << makeJDK("6 Update "+m.group(1),pc);
         }
+    } else if (f.name == 'JDK 5') {
+        // XXX HUDSON-5327 5u22 not available without filling out a form:
+        // https://dct.sun.com/dct/forms/reg_us_0809_958_0.jsp
     }
 
     select.getOptions().collect(jdks) { HtmlOption opt ->
@@ -108,14 +110,14 @@ def findID(Family f, String href) throws Exception {
         }
         throw new IllegalStateException("No JDK link in "+href);
     }
-    return findProductCode(a);
+    return findProductCode(a.hrefAttribute);
 }
 
-def findProductCode(HtmlAnchor a) {
-    Matcher m = ID_PATTERN.matcher(a.getHrefAttribute());
+String findProductCode(String url) {
+    Matcher m = ID_PATTERN.matcher(url);
     if(m.find())
         return m.group(1);
-    throw new IllegalStateException("Failed to find ID for "+href);
+    throw new IllegalStateException("Failed to find ID for " + url);
 }
 
 HtmlPage getPage(String url) {
