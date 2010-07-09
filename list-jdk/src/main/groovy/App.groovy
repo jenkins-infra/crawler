@@ -63,15 +63,14 @@ JSONArray listFamily(HtmlPage p, Family f) throws Exception {
             System.err.println("Warning: no JDK link in http://java.sun.com/javase/downloads/widget/jdk6.jsp");
         } else {
             String pc = findProductCode(form.actionAttribute);
-            Matcher m = bareJDK.matcher(pc)
-            m.find();
-            jdks << makeJDK("6 Update "+m.group(1),pc);
+            def add = {String _pc ->
+                Matcher m = bareJDK.matcher(_pc)
+                m.find();
+                jdks << makeJDK("6 Update " + m.group(1), _pc);
+            }
+            add(pc);
+            add(pc.replace("21", "20"));
         }
-    } else if (f.name == 'JDK 5.0') {
-        // 5u22 not available without filling out a form:
-        // https://dct.sun.com/dct/forms/reg_us_0809_958_0.jsp
-        // So just hardcode it. At EOSL so probably will be last one.
-        jdks << makeJDK("5.0 Update 22", "jdk-1.5.0_22-oth-JPR@CDS-CDS_Developer");
     }
 
     select.getOptions().collect(jdks) { HtmlOption opt ->
