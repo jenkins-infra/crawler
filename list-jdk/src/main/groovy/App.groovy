@@ -80,11 +80,11 @@ JSONArray listFamily(HtmlPage p, Family f) throws Exception {
     return jdks;
 }
 
-def makeJDK(name,id) {
+JSONObject makeJDK(name,id) {
     return new JSONObject().accumulate("name",name).accumulate("id",id)
 }
 
-def buildName(String label) {
+String buildName(String label) {
     // cut off extra explanation
     int idx = label.indexOf('+');
     if(idx>=0)  label=label.substring(0,idx);
@@ -94,7 +94,7 @@ def buildName(String label) {
 }
 
 
-def findID(Family f, String href) throws Exception {
+String findID(Family f, String href) throws Exception {
 
     HtmlPage p = getPage("http://java.sun.com${href}");
     HtmlAnchor a = p.getAnchors().find { HtmlAnchor a ->
