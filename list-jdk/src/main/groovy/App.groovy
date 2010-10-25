@@ -48,12 +48,16 @@ if(project!=null) {
 }
 
 JSONArray listFamily(HtmlPage p, Family f) throws Exception {
-    HtmlElement o = p.selectSingleNode("//option[@value='/products/archive/j2se/${f.entryPoint}/index.html']");
-    HtmlSelect select = o.getParentNode();
-
     JSONArray jdks = new JSONArray();
 
-    // the latest JDK 5 & 6 releases are not listed on the archive page.
+    HtmlElement o = p.selectSingleNode("//option[@value='http://java.sun.com/products/archive/j2se/${f.entryPoint}/index.html']");
+    if (o == null) {
+        System.err.println("Warning: no match for //option[@value='http://java.sun.com/products/archive/j2se/${f.entryPoint}/index.html'] in ${p.getDocumentURI()}}");
+        return jdks;
+    }
+    HtmlSelect select = o.getParentNode();
+
+    /* XXX this is failing to find 6u22...why?
     if(f.name=="JDK 6") {
         Pattern bareJDK = Pattern.compile("jdk-6u([0-9]+)-oth-JPR");
         HtmlForm form = getPage("http://java.sun.com/javase/downloads/widget/jdk6.jsp").forms.find { HtmlForm form ->
@@ -72,6 +76,7 @@ JSONArray listFamily(HtmlPage p, Family f) throws Exception {
             add(pc.replace("21", "20"));
         }
     }
+    */
 
     select.getOptions().collect(jdks) { HtmlOption opt ->
         return makeJDK(buildName(opt.getTextContent()),findID(f,opt.getValueAttribute()));
@@ -95,7 +100,7 @@ String buildName(String label) {
 
 String findID(Family f, String href) throws Exception {
 
-    HtmlPage p = getPage("http://java.sun.com${href}");
+    HtmlPage p = getPage(href);
     HtmlAnchor a = p.getAnchors().find { HtmlAnchor a ->
         def m = ID_PATTERN.matcher(a.getHrefAttribute());
         return m.find() && m.group(1).contains("dk") && !m.group(1).contains("re")
