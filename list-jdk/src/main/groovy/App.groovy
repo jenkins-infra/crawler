@@ -81,6 +81,32 @@ JSONArray listFamily(HtmlPage p, Family f) throws Exception {
     select.getOptions().collect(jdks) { HtmlOption opt ->
         return makeJDK(buildName(opt.getTextContent()),findID(f,opt.getValueAttribute()));
     }
+
+    if(f.name=="JDK 6") {
+        try {
+            Matcher idMatcher = Pattern.compile("\\Ajdk-6u(\\d+)-oth-JPR@CDS-CDS_Developer\\Z").matcher(jdks[0].id);
+            Matcher nameMatcher = Pattern.compile("\\A6 Update (\\d+)\\Z").matcher(jdks[0].name);
+            if (idMatcher.find() && nameMatcher.find() && idMatcher.group(1).equals(nameMatcher.group(1))) {
+                Integer max = Integer.parseInt(idMatcher.group(1));
+                // Try up to three versions after the max
+                for (int i = max+1; i<=max+3; i++) {
+                    try {
+                        String id = "jdk-6u"+i+"-oth-JPR@CDS-CDS_Developer";
+                        print("Trying "+ id +"\n");
+                        HtmlPage pp = getPage("https://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/ViewProductDetail-Start?ProductRef="+id);
+                        HtmlElement e = pp.getElementById("dnld_license"); // Is there a license checkbox?
+                        if (e != null) {
+                            jdks.add(0, makeJDK("6 Update " + i, id));
+                        }
+                    } catch (Error e) {
+                    }
+                }    
+            }
+        } catch (Error e) {
+            print("Error doing version extension:" + e + "\n");
+        }
+    }
+
     return jdks;
 }
 
