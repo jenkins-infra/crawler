@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONArray;
 
+// family is a major release of JDK
 class Family {
     String name;
     String entryPoint;
@@ -82,6 +83,8 @@ JSONArray listFamily(HtmlPage p, Family f) throws Exception {
         return makeJDK(buildName(opt.getTextContent()),findID(f,opt.getValueAttribute()));
     }
 
+    // archive page doesn't show the latest version of the release.
+    // so try to guess them. If we have 6u22 on the archive page, maybe we have 6u23.
     if(f.name=="JDK 6") {
         try {
             Matcher idMatcher = Pattern.compile("\\Ajdk-6u(\\d+)-oth-JPR@CDS-CDS_Developer\\Z").matcher(jdks[0].id);
