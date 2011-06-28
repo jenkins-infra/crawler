@@ -9,12 +9,13 @@ import net.sf.json.*
 import com.gargoylesoftware.htmlunit.WebClient
 
 def wc = new WebClient()
-HtmlPage p = wc.getPage("http://repo.gradle.org/gradle/distributions/");
+def baseUrl = 'http://repo.gradle.org/gradle/distributions/'
+HtmlPage p = wc.getPage(baseUrl);
 
 def json = [];
 
-p.selectNodes("//div[@class='local-repos-list']//a[@href]").reverse().collect { HtmlAnchor e ->
-    def url = e.getHrefAttribute()
+p.selectNodes("//a[@href]").reverse().collect { HtmlAnchor e ->
+    def url = baseUrl + e.getHrefAttribute()
     println url
     def m = (url =~ /gradle-(.*)-bin.zip$/)
     if (m) {
