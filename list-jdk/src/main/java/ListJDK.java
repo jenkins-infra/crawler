@@ -25,7 +25,9 @@ public class ListJDK {
 
     public static void main(String[] args) throws Exception {
         OutputStreamWriter w = new OutputStreamWriter(new FileOutputStream("target/hudson.tools.JDKInstaller.json"), "UTF-8");
+        w.write("downloadService.post('hudson.tools.JDKInstaller',");
         w.write(new ListJDK().build().toString());
+        w.write(")");
         w.close();
     }
 
