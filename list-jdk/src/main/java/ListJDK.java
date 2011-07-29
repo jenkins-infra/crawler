@@ -47,7 +47,8 @@ public class ListJDK {
         o.put("name",name);
         JSONArray releases = new JSONArray();
         for (String n : (Set<String>)data.keySet()) {
-            releases.add(release(n,data.getJSONObject(n)));
+            if (n.contains("jdk"))
+                releases.add(release(n,data.getJSONObject(n)));
         }
         o.put("releases",releases);
         return o;
@@ -57,6 +58,9 @@ public class ListJDK {
         JSONObject in = src.getJSONObject("files");
         JSONArray files = new JSONArray();
         for (String n : (Set<String>)in.keySet()) {
+            if (n.contains("rpm"))   continue;   // we don't use RPM bundle
+            if (n.contains("tar.Z"))   continue;   // we don't use RPM bundle
+            if (n.contains("-iftw.exe"))   continue;   // online installers
             files.add(file(n, in.getJSONObject(n)));
         }
         return src.element("name",name).element("files",files);
