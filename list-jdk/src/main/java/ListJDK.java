@@ -49,7 +49,7 @@ public class ListJDK {
         o.put("name",name);
         JSONArray releases = new JSONArray();
         for (String n : (Set<String>)data.keySet()) {
-            if (n.contains("jdk"))
+            if (n.contains("jdk") || n.contains("j2sdk"))
                 releases.add(release(n,data.getJSONObject(n)));
         }
         o.put("releases",releases);
