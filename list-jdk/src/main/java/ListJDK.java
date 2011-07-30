@@ -7,7 +7,13 @@ import net.sourceforge.htmlunit.corejs.javascript.IdScriptableObject;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Couldn't get the Groovy version working because of org/w3c/dom/UserDataHandler.class in Jaxen
@@ -41,6 +47,8 @@ public class ListJDK {
                 .element(family("JDK 1.4", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase14-419411.html"))));
     }
 
+    private static final Pattern NUMBER = Pattern.compile("\\d+");
+
     /**
      * Builds a data structure for a major release.
      */
@@ -48,7 +56,26 @@ public class ListJDK {
         JSONObject o = new JSONObject();
         o.put("name",name);
         JSONArray releases = new JSONArray();
-        for (String n : (Set<String>)data.keySet()) {
+        List<String> releaseNames = new ArrayList<String>((Set<String>) data.keySet());
+        Collections.sort(releaseNames,new Comparator<String>() {
+            public int compare(String o1, String o2) {
+                return -versionNormalize(o1).compareTo(versionNormalize(o2)); // descending order
+            }
+
+            /**
+             * We want to compare numbers among string tokens as numbers. To do it simply, we force the width of any string token to be 4 and then compare.
+             */
+            private String versionNormalize(String s) {
+                Matcher m = NUMBER.matcher(s);
+                StringBuffer sb = new StringBuffer();
+                while (m.find()) {
+                    m.appendReplacement(sb, String.format("%4s",m.group()));
+                }
+                m.appendTail(sb);
+                return sb.toString();
+            }
+        });
+        for (String n : releaseNames) {
             if (n.contains("jdk") || n.contains("j2sdk"))
                 releases.add(release(n,data.getJSONObject(n)));
         }
@@ -65,7 +92,17 @@ public class ListJDK {
             if (n.contains("-iftw.exe"))   continue;   // online installers
             files.add(file(n, in.getJSONObject(n)));
         }
-        return src.element("name",name).element("files",files);
+        return src.element("name",massageName(name)).element("files", files);
+    }
+
+    /**
+     * JDK release names are inconsistent, so make it look uniform
+     */
+    private String massageName(String name) {
+        name = name.trim();
+        name = name.replace("(TM)", "");
+        name = name.replace(" Update ","u");
+        return name;
     }
 
     private JSONObject file(String name, JSONObject src) {
