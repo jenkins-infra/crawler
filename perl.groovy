@@ -10,7 +10,7 @@ import com.gargoylesoftware.htmlunit.WebClient
 
 //@Grab("org.jenkins-ci:version-number:1.0")
 //@Grab(group="org.jenkins-ci", module="version-number", version="1.0")
-import hudson.util.VersionNumber;
+//import hudson.util.VersionNumber
 
 def wc = new WebClient()
 def baseUrl = 'http://www.cpan.org/src/5.0/'
