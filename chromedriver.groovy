@@ -30,7 +30,7 @@ p.selectNodes("//a[@href]").each { HtmlAnchor e ->
 JSONObject envelope = JSONObject.fromObject([list:json]);
 println envelope.toString(2)
 
-key = "jenkins.plugins.chromedriver.ChromeDriverInstaller";
+key = "org.jenkins-ci.plugins.chromedriver.ChromeDriver";
 File d = new File("target")
 d.mkdirs()
 new File(d,"${key}.json").write("downloadService.post('${key}',${envelope.toString(2)})");
