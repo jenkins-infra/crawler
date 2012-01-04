@@ -6,11 +6,18 @@ import net.sf.json.*
 
 def json = [];
 
-def dir = new File("./scriptler");
+def dir = new File("./jenkins-scripts");
 
-// TODO: update or clone from git
+if (dir.isDirectory() && new File(dir, ".git").isDirectory()) {
+    "git pull --rebase origin master".execute([], dir).waitFor()
+} else {
+     dir.mkdirs()
+    "git clone git://github.com/jenkinsci/jenkins-scripts -b master".execute().waitFor()
+}
 
-dir.eachFileMatch(~/.+\.groovy/) { File f ->
+def scriptlerDir = new File(dir, "scriptler")
+
+scriptlerDir.eachFileMatch(~/.+\.groovy/) { File f ->
     def m = (f.text =~ /(?ms)BEGIN META(.+?)END META/)
     if (m) {
         def metadata = JSONObject.fromObject(m[0][1]);
