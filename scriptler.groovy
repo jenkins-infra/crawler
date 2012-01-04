@@ -21,7 +21,9 @@ scriptlerDir.eachFileMatch(~/.+\.groovy/) { File f ->
     def m = (f.text =~ /(?ms)BEGIN META(.+?)END META/)
     if (m) {
         def metadata = JSONObject.fromObject(m[0][1]);
+        metadata['script'] = f.name
         json << metadata
+        
     }
 }
 
