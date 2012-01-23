@@ -30,7 +30,7 @@ scriptlerDir.eachFileMatch(~/.+\.groovy/) { File f ->
 JSONObject envelope = JSONObject.fromObject([list:json]);
 println envelope.toString(2)
 
-key = "org.jenkins-ci.plugins.scriptler.CentralScriptJsonCatalog";
+key = "org.jenkinsci.plugins.scriptler.CentralScriptJsonCatalog";
 File d = new File("target")
 d.mkdirs()
 new File(d,"${key}.json").write("downloadService.post('${key}',${envelope.toString(2)})");
