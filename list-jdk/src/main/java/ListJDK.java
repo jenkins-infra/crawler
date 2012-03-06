@@ -41,7 +41,7 @@ public class ListJDK {
         return new JSONObject()
             .element("version", 2)
             .element("data",new JSONArray()
-                .element(family("JDK 7", parse("http://www.oracle.com/technetwork/java/javase/downloads/java-se-jdk-7-download-432154.html")))
+                .element(family("JDK 7", parse("http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html")))
                 .element(family("JDK 6", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase6-419409.html")))
                 .element(family("JDK 5", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase5-419410.html")))
                 .element(family("JDK 1.4", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase14-419411.html"))));
