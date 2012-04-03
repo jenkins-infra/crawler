@@ -9,8 +9,8 @@ import net.sf.json.*
 import com.gargoylesoftware.htmlunit.WebClient
 
 def wc = new WebClient()
-def baseUrl = 'http://services.gradle.org/distributions'
-HtmlPage p = wc.getPage(baseUrl);
+def baseUrl = 'http://services.gradle.org'
+HtmlPage p = wc.getPage(baseUrl + '/distributions');
 
 def json = [];
 
