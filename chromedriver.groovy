@@ -10,20 +10,21 @@ import net.sf.json.*
 
 def wc = new WebClient()
 wc.javaScriptEnabled = wc.cssEnabled = false;
-def baseUrl = 'http://code.google.com/p/chromium/downloads/list'
+def baseUrl = 'http://code.google.com/p/chromedriver/downloads/list'
 HtmlPage p = wc.getPage(baseUrl);
 
 def json = [];
 
 p.selectNodes("//a[@href]").each { HtmlAnchor e ->
     def href = e.getHrefAttribute()
-    if (!href.startsWith("//chromium.googlecode.com/files/chromedriver_") || !href.endsWith(".zip"))   return;
+    def textContent = e.getTextContent().trim()
+    if (!href.startsWith("detail?") || !textContent.endsWith(".zip"))   return;
 
-    def os = href.split("_")[1];
+    def os = textContent.split("_")[1];
 
-    println href;
+    println textContent;
     if (os!=null) {
-        json << ["id":os, "url":"http:"+href];
+        json << ["id":os, "url":"http://chromedriver.googlecode.com/files/"+textContent];
     }
 }
 
