@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-// Generates server-side metadata for Gradle auto-installation
+// Generates server-side metadata for chromedriver auto-installation
 @GrabResolver(name="m.g.o-public",root='http://maven.glassfish.org/content/group/public/')
 @Grab(group="org.jvnet.hudson",module="htmlunit",version="2.2-hudson-9")
 import com.gargoylesoftware.htmlunit.html.*;
