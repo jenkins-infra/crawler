@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 // Generates server-side metadata for MongoDB auto-installation
 @Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.5.1' )
 import groovyx.net.http.*
@@ -8,9 +9,13 @@ import com.gargoylesoftware.htmlunit.html.*;
 @Grab(group="org.kohsuke.stapler",module="json-lib",version="2.1",classifier="jdk15")
 import net.sf.json.*
 import com.gargoylesoftware.htmlunit.WebClient
+import java.util.logging.Level;
 
 def wc = new WebClient()
 def json = [];
+
+// disable logging
+java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF); 
 
 def http = new HttpURLClient(url:'http://grails.org', followRedirects: false)
 HtmlPage p = wc.getPage('http://grails.org/download/archive/Grails')
