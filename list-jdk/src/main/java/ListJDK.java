@@ -27,6 +27,7 @@ public class ListJDK {
     public ListJDK() {
         wc = new WebClient();
         wc.setCssEnabled(false);
+        wc.setThrowExceptionOnScriptError(false);
     }
 
     public static void main(String[] args) throws Exception {
