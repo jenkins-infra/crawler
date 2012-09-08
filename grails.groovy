@@ -1,11 +1,11 @@
 #!/usr/bin/env groovy
 // Generates server-side metadata for MongoDB auto-installation
+@GrabResolver(name="repo.jenkins-ci.org",root='http://repo.jenkins-ci.org/public/')
+@Grab(group="org.jvnet.hudson",module="htmlunit",version="2.2-hudson-9")
+@Grab(group="org.jenkins-ci",module="update-center2",version="1.20")
 @Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.5.1' )
 import groovyx.net.http.*
-@GrabResolver(name="m.g.o-public",root='http://maven.glassfish.org/content/group/public/')
-@Grab(group="org.jvnet.hudson",module="htmlunit",version="2.2-hudson-9")
 import com.gargoylesoftware.htmlunit.html.*;
-@Grab(group="org.kohsuke.stapler",module="json-lib",version="2.1",classifier="jdk15")
 import net.sf.json.*
 import com.gargoylesoftware.htmlunit.WebClient
 import org.jvnet.hudson.update_center.Signer

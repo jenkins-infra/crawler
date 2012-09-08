@@ -1,7 +1,8 @@
 #!/usr/bin/env groovy
 // Generates index for scriptler scripts
-@GrabResolver(name="m.g.o-public",root='http://maven.glassfish.org/content/group/public/')
-@Grab(group="org.kohsuke.stapler",module="json-lib",version="2.1",classifier="jdk15")
+@GrabResolver(name="repo.jenkins-ci.org",root='http://repo.jenkins-ci.org/public/')
+@Grab(group="org.jvnet.hudson",module="htmlunit",version="2.2-hudson-9")
+@Grab(group="org.jenkins-ci",module="update-center2",version="1.20")
 import net.sf.json.*
 import org.jvnet.hudson.update_center.Signer
 
