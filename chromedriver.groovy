@@ -7,6 +7,7 @@ import com.gargoylesoftware.htmlunit.WebClient
 
 @Grab(group="org.kohsuke.stapler",module="json-lib",version="2.1",classifier="jdk15")
 import net.sf.json.*
+import org.jvnet.hudson.update_center.Signer
 
 def wc = new WebClient()
 wc.javaScriptEnabled = wc.cssEnabled = false;
@@ -29,6 +30,8 @@ p.selectNodes("//a[@href]").each { HtmlAnchor e ->
 }
 
 JSONObject envelope = JSONObject.fromObject([list:json]);
+new Signer().configureFromEnvironment().sign(envelope);
+
 println envelope.toString(2)
 
 key = "org.jenkins-ci.plugins.chromedriver.ChromeDriver";

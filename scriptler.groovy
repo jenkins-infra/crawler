@@ -3,6 +3,7 @@
 @GrabResolver(name="m.g.o-public",root='http://maven.glassfish.org/content/group/public/')
 @Grab(group="org.kohsuke.stapler",module="json-lib",version="2.1",classifier="jdk15")
 import net.sf.json.*
+import org.jvnet.hudson.update_center.Signer
 
 def json = [];
 
@@ -31,6 +32,7 @@ scriptlerDir.eachFileMatch(~/.+\.groovy/) { File f ->
 }
 
 JSONObject envelope = JSONObject.fromObject([list:json]);
+new Signer().configureFromEnvironment().sign(envelope);
 println envelope.toString(2)
 
 key = "org.jenkinsci.plugins.scriptler.CentralScriptJsonCatalog";

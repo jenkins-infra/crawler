@@ -7,6 +7,7 @@ import com.gargoylesoftware.htmlunit.html.*;
 @Grab(group="org.kohsuke.stapler",module="json-lib",version="2.1",classifier="jdk15")
 import net.sf.json.*
 import com.gargoylesoftware.htmlunit.WebClient
+import org.jvnet.hudson.update_center.Signer
 
 //@Grab("org.jenkins-ci:version-number:1.0")
 //@Grab(group="org.jenkins-ci", module="version-number", version="1.0")
@@ -33,6 +34,7 @@ select.getChildElements().each { e ->
 //json = json.sort{a,b -> new VersionNumber(a.id).compareTo(new VersionNumber(b.id)) }
 json = json.sort{a,b -> a.id.compareTo(b.id) }
 JSONObject envelope = JSONObject.fromObject([list:json]);
+new Signer().configureFromEnvironment().sign(envelope);
 println envelope.toString(2)
 
 key = "org.jenkinsci.plugins.perlinstaller.PerlInstaller";

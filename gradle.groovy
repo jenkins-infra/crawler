@@ -7,6 +7,7 @@ import com.gargoylesoftware.htmlunit.html.*;
 @Grab(group="org.kohsuke.stapler",module="json-lib",version="2.1",classifier="jdk15")
 import net.sf.json.*
 import com.gargoylesoftware.htmlunit.WebClient
+import org.jvnet.hudson.update_center.Signer
 
 def wc = new WebClient()
 def baseUrl = 'http://services.gradle.org'
@@ -24,6 +25,7 @@ p.selectNodes("//a[@href]").reverse().collect { HtmlAnchor e ->
 }
 
 JSONObject envelope = JSONObject.fromObject([list:json]);
+new Signer().configureFromEnvironment().sign(envelope);
 println envelope.toString(2)
 
 key = "hudson.plugins.gradle.GradleInstaller";

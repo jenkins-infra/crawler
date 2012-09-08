@@ -4,6 +4,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage
 import java.util.regex.Pattern
 import net.sf.json.JSONObject
 import hudson.util.VersionNumber
+import org.jvnet.hudson.update_center.Signer
 
 def listUp(url,pattern) {
     wc = new WebClient()
@@ -41,6 +42,7 @@ def listUp(url,pattern) {
 
 def store(key,o) {
     JSONObject envelope = JSONObject.fromObject(["list": o]);
+    new Signer().configureFromEnvironment().sign(envelope);
     println envelope.toString(2)
 
     if(project!=null) {

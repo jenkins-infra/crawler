@@ -37,6 +37,11 @@
       <version>1.409</version>
     </dependency>
     <dependency>
+      <groupId>org.jenkins-ci</groupId>
+      <artifactId>update-center2</artifactId>
+      <version>1.18-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.4</version>

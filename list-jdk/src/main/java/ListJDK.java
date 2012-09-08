@@ -3,10 +3,13 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sourceforge.htmlunit.corejs.javascript.IdScriptableObject;
+import org.jvnet.hudson.update_center.Signer;
+import org.kohsuke.args4j.CmdLineException;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -38,14 +41,14 @@ public class ListJDK {
         w.close();
     }
 
-    private JSONObject build() throws IOException {
-        return new JSONObject()
-            .element("version", 2)
-            .element("data",new JSONArray()
-                .element(family("JDK 7", parse("http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html")))
-                .element(family("JDK 6", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase6-419409.html")))
-                .element(family("JDK 5", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase5-419410.html")))
-                .element(family("JDK 1.4", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase14-419411.html"))));
+    private JSONObject build() throws IOException, CmdLineException, GeneralSecurityException {
+        return new Signer().configureFromEnvironment().sign(new JSONObject()
+                .element("version", 2)
+                .element("data", new JSONArray()
+                        .element(family("JDK 7", parse("http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html")))
+                        .element(family("JDK 6", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase6-419409.html")))
+                        .element(family("JDK 5", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase5-419410.html")))
+                        .element(family("JDK 1.4", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase14-419411.html")))));
     }
 
     private static final Pattern NUMBER = Pattern.compile("\\d+");

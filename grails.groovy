@@ -8,6 +8,7 @@ import com.gargoylesoftware.htmlunit.html.*;
 @Grab(group="org.kohsuke.stapler",module="json-lib",version="2.1",classifier="jdk15")
 import net.sf.json.*
 import com.gargoylesoftware.htmlunit.WebClient
+import org.jvnet.hudson.update_center.Signer
 
 def wc = new WebClient()
 def json = [];
@@ -28,6 +29,7 @@ p.selectNodes(xpath).collect { HtmlOption opt ->
 }
 
 JSONObject envelope = JSONObject.fromObject([list:json])
+new Signer().configureFromEnvironment().sign(envelope);
 println envelope.toString(2)
 key = "com.g2one.hudson.grails.GrailsInstaller"
 File d = new File("target")
