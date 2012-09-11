@@ -13,11 +13,6 @@
   <packaging>pom</packaging>
   <description>Code that we use behind the scene.</description>
 
-  <modules>
-    <module>list-jdk</module>
-    <module>list-ant</module>
-  </modules>
-
   <dependencies>
     <dependency>
       <groupId>org.jenkins-ci</groupId>
@@ -59,32 +54,10 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.codehaus.groovy.maven</groupId>
-          <artifactId>gmaven-plugin</artifactId>
-          <executions>
-            <execution>
-              <phase>test</phase>
-              <goals>
-                <goal>execute</goal>
-              </goals>
-              <configuration>
-                <source>${project.basedir}/src/main/groovy/App.groovy</source>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
-
   <repositories>
     <repository>
-      <id>m.g.o-public</id>
-      <url>http://maven.glassfish.org/content/groups/public/</url>
+      <id>repo.jenkins-ci.org</id>
+      <url>http://repo.jenkins-ci.org/public/</url>
     </repository>
   </repositories>
 </project>

@@ -3,10 +3,21 @@
 package lib;
 
 @GrabResolver(name="repo.jenkins-ci.org",root='http://repo.jenkins-ci.org/public/')
-@Grab(group="org.jvnet.hudson",module="htmlunit",version="2.2-hudson-9")
-@Grab(group="org.jenkins-ci",module="update-center2",version="1.20")
+@GrabExclude('nekohtml:nekohtml')
+@Grapes([
+    @Grab("net.sourceforge.nekohtml:nekohtml:1.9.13"),
+    @Grab("org.jenkins-ci:htmlunit:2.6-jenkins-4"),
+    @Grab("org.jenkins-ci:update-center2:1.20")
+])
 class init {
     static {
         println "done"
+        which org.apache.xerces.parsers.AbstractSAXParser.class
+        which com.gargoylesoftware.htmlunit.html.HTMLParser.class
+        which org.cyberneko.html.HTMLConfiguration.class
+    }
+
+    static void which(Class c) {
+//        println c.classLoader.getResource(c.name.replace(".","/")+".class")
     }
 }

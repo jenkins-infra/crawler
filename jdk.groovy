@@ -1,29 +1,15 @@
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sourceforge.htmlunit.corejs.javascript.IdScriptableObject;
-import org.jvnet.hudson.update_center.Signer;
-import org.kohsuke.args4j.CmdLineException;
+#!./lib/runner.groovy
+// Generates server-side metadata for Oracle JDK
+import com.gargoylesoftware.htmlunit.WebClient
+import net.sf.json.JSONObject
+import org.kohsuke.args4j.CmdLineException
+import java.security.GeneralSecurityException
+import net.sf.json.JSONArray
+import java.util.regex.Pattern
+import java.util.regex.Matcher
+import com.gargoylesoftware.htmlunit.html.HtmlPage
+import net.sourceforge.htmlunit.corejs.javascript.IdScriptableObject
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-/**
- * Couldn't get the Groovy version working because of org/w3c/dom/UserDataHandler.class in Jaxen
- * that makes Groovy classloader unhappy.
- *
- * @author Kohsuke Kawaguchi
- */
 public class ListJDK {
     private final WebClient wc;
 
@@ -33,22 +19,18 @@ public class ListJDK {
         wc.setThrowExceptionOnScriptError(false);
     }
 
-    public static void main(String[] args) throws Exception {
-        OutputStreamWriter w = new OutputStreamWriter(new FileOutputStream("target/hudson.tools.JDKInstaller.json"), "UTF-8");
-        w.write("downloadService.post('hudson.tools.JDKInstaller',");
-        w.write(new ListJDK().build().toString());
-        w.write(")");
-        w.close();
+    public void main() throws Exception {
+        lib.DataWriter.write("hudson.tools.JDKInstaller",build());
     }
 
     private JSONObject build() throws IOException, CmdLineException, GeneralSecurityException {
-        return new Signer().configureFromEnvironment().sign(new JSONObject()
+        return new JSONObject()
                 .element("version", 2)
                 .element("data", new JSONArray()
                         .element(family("JDK 7", parse("http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html")))
                         .element(family("JDK 6", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase6-419409.html")))
                         .element(family("JDK 5", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase5-419410.html")))
-                        .element(family("JDK 1.4", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase14-419411.html")))));
+                        .element(family("JDK 1.4", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase14-419411.html"))));
     }
 
     private static final Pattern NUMBER = Pattern.compile("\\d+");
@@ -88,13 +70,13 @@ public class ListJDK {
     }
 
     private JSONObject release(String name, JSONObject src) {
-        JSONObject in = src.getJSONObject("files");
+        JSONObject input = src.getJSONObject("files");
         JSONArray files = new JSONArray();
-        for (String n : (Set<String>)in.keySet()) {
+        for (String n : (Set<String>)input.keySet()) {
             if (n.contains("rpm"))   continue;   // we don't use RPM bundle
             if (n.contains("tar.Z"))   continue;   // we don't use RPM bundle
             if (n.contains("-iftw.exe"))   continue;   // online installers
-            files.add(file(n, in.getJSONObject(n)));
+            files.add(file(n, input.getJSONObject(n)));
         }
         return src.element("name",massageName(name)).element("files", files);
     }
@@ -143,3 +125,5 @@ public class ListJDK {
         return p;
     }
 }
+
+new ListJDK().main();

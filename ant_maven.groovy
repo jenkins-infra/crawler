@@ -1,15 +1,16 @@
+#!./lib/runner.groovy
+// Generates server-side metadata for Ant & Maven
 import com.gargoylesoftware.htmlunit.WebClient
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor
 import com.gargoylesoftware.htmlunit.html.HtmlPage
 import java.util.regex.Pattern
 import net.sf.json.JSONObject
 import hudson.util.VersionNumber
-import org.jvnet.hudson.update_center.Signer
 
 def listUp(url,pattern) {
     wc = new WebClient()
-    wc.setJavaScriptEnabled(false);
-    wc.setCssEnabled(false);
+    wc.javaScriptEnabled = false;
+    wc.cssEnabled = false;
     HtmlPage p = wc.getPage(url);
     pattern=Pattern.compile(pattern);
 
@@ -42,17 +43,8 @@ def listUp(url,pattern) {
 
 def store(key,o) {
     JSONObject envelope = JSONObject.fromObject(["list": o]);
-    new Signer().configureFromEnvironment().sign(envelope);
-    println envelope.toString(2)
-
-    if(project!=null) {
-        // if we run from GMaven during a build, put that out in a file as well, with the JSONP support
-        File d = new File(project.basedir, "target")
-        d.mkdirs()
-        new File(d,"${key}.json").write("downloadService.post('${key}',${envelope.toString()})");
-    }
+    lib.DataWriter.write(key,envelope);
 }
-
 
 store("hudson.tasks.Ant.AntInstaller",  listUp("http://archive.apache.org/dist/ant/binaries/",  "ant-([0-9.]+)-bin.zip\$"))
 store("hudson.tasks.Maven.MavenInstaller",listUp("http://archive.apache.org/dist/maven/binaries/","maven-([0-9.]+)(-bin)?.zip\$"))
