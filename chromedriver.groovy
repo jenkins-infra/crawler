@@ -1,10 +1,9 @@
-#!./runner.groovy
+#!./lib/runner.groovy
 // Generates server-side metadata for Gradle auto-installation
 import com.gargoylesoftware.htmlunit.html.*;
 import com.gargoylesoftware.htmlunit.WebClient
 
 import net.sf.json.*
-import org.jvnet.hudson.update_center.Signer
 
 def wc = new WebClient()
 wc.javaScriptEnabled = wc.cssEnabled = false;
@@ -26,12 +25,4 @@ p.selectNodes("//a[@href]").each { HtmlAnchor e ->
     }
 }
 
-JSONObject envelope = JSONObject.fromObject([list:json]);
-new Signer().configureFromEnvironment().sign(envelope);
-
-println envelope.toString(2)
-
-key = "org.jenkins-ci.plugins.chromedriver.ChromeDriver";
-File d = new File("target")
-d.mkdirs()
-new File(d,"${key}.json").write("downloadService.post('${key}',${envelope.toString(2)})");
+lib.DataWriter.write("org.jenkins-ci.plugins.chromedriver.ChromeDriver",JSONObject.fromObject([list:json]));

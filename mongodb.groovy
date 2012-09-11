@@ -1,12 +1,8 @@
-#!/usr/bin/env groovy
+#!./lib/runner.groovy
 // Generates server-side metadata for MongoDB auto-installation
-@GrabResolver(name="repo.jenkins-ci.org",root='http://repo.jenkins-ci.org/public/')
-@Grab(group="org.jvnet.hudson",module="htmlunit",version="2.2-hudson-9")
-@Grab(group="org.jenkins-ci",module="update-center2",version="1.20")
 import com.gargoylesoftware.htmlunit.html.*;
 import net.sf.json.*
 import com.gargoylesoftware.htmlunit.WebClient
-import org.jvnet.hudson.update_center.Signer
 
 def wc = new WebClient()
 def json = [];
@@ -25,10 +21,4 @@ def json = [];
     }
 }}
 
-JSONObject envelope = JSONObject.fromObject([list:json])
-new Signer().configureFromEnvironment().sign(envelope);
-println envelope.toString(2)
-key = "org.jenkinsci.plugins.mongodb.MongoDBInstaller"
-File d = new File("target")
-d.mkdirs()
-new File(d,"${key}.json").write("downloadService.post('${key}',${envelope.toString(2)})")
+lib.DataWriter.write("org.jenkinsci.plugins.mongodb.MongoDBInstaller",JSONObject.fromObject([list:json]));

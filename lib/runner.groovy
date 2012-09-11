@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
-System.setProperty("mavenVersion","2.0.8")
+System.setProperty("mavenVersion","3.0")
 print "loading dependencies..."
-Class.forName("init",true,this.class.classLoader)
+Class.forName("lib.init",true,this.class.classLoader)
 
 if (args.length==0) {
     println "No script specified";
