@@ -1,8 +1,5 @@
-#!/usr/bin/env groovy
+#!./runner.groovy
 // Generates server-side metadata for Gradle auto-installation
-@GrabResolver(name="repo.jenkins-ci.org",root='http://repo.jenkins-ci.org/public/')
-@Grab(group="org.jvnet.hudson",module="htmlunit",version="2.2-hudson-9")
-@Grab(group="org.jenkins-ci",module="update-center2",version="1.20")
 import com.gargoylesoftware.htmlunit.html.*;
 import com.gargoylesoftware.htmlunit.WebClient
 
