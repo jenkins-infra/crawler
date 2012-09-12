@@ -18,6 +18,6 @@ public class DataWriter {
         // then signed data to *.json.html
         if (System.getenv("JENKINS_SIGNER")!=null)
             new Signer().configureFromEnvironment().sign(envelope);
-        new File(d,"${key}.json.html").write("<html><body><script>window.onload = function () { window.parent.postMessage(JSON.stringify(\n${envelope.toString(2)}\n),'*'); };</script></body></html>");
+        new File(d,"${key}.json.html").write("<!DOCTYPE html><html><body><script>window.onload = function () { window.parent.postMessage(JSON.stringify(\n${envelope.toString(2)}\n),'*'); };</script></body></html>");
     }
 }
