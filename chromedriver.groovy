@@ -1,5 +1,5 @@
 #!./lib/runner.groovy
-// Generates server-side metadata for Gradle auto-installation
+// Generates server-side metadata for chromedriver auto-installation
 import com.gargoylesoftware.htmlunit.html.*;
 import com.gargoylesoftware.htmlunit.WebClient
 
