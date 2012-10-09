@@ -1,6 +1,7 @@
 // code to load all the necessary dependencies
 // placed in a separate file to load this lazily after we set the necessary system property to work around Maven resolution
 package lib;
+import java.util.logging.*;
 
 @GrabResolver(name="repo.jenkins-ci.org",root='http://repo.jenkins-ci.org/public/')
 @GrabExclude('nekohtml:nekohtml')
@@ -15,6 +16,8 @@ class init {
         which org.apache.xerces.parsers.AbstractSAXParser.class
         which com.gargoylesoftware.htmlunit.html.HTMLParser.class
         which org.cyberneko.html.HTMLConfiguration.class
+
+        Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
     }
 
     static void which(Class c) {
