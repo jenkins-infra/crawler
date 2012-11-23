@@ -9,19 +9,16 @@ import com.gargoylesoftware.htmlunit.WebClient
 def wc = new WebClient()
 def json = [];
 
-def http = new HttpURLClient(url:'http://grails.org', followRedirects: false)
-HtmlPage p = wc.getPage('http://grails.org/download/archive/Grails')
-def xpath = "//tr/td[1]/strong[contains(text(), 'Binary Z')]/../../td[2]/select[@name='mirror']/option[1]"
-p.selectNodes(xpath).collect { HtmlOption opt ->
-    def res = http.request(path:'/download/file', query:[ mirror:opt.getValueAttribute() ])
-    if (res.status == 302) {
-        def url = res.headers.Location
-        def m = url =~/\/grails(?:-bin)?-(.*)\.zip/
-        if (m) {
-            json << [id:m[0][1], name:"Grails ${m[0][1]}".toString(), url:url]
-        }
+def http = new HttpURLClient(url:'http://www.grails.org', followRedirects: false)
+HtmlPage p = wc.getPage('http://www.grails.org/download')
+def xpath = "//section[@id='downloadArchives']//table[@class='table']//tr/td[4]/a"
+p.selectNodes(xpath).collect { HtmlAnchor a ->
+    def url = a.getHrefAttribute()
+    println url
+    def m = url =~/\/grails(?:-bin)?-(.*)\.zip/
+    if (m) {
+        json << [id:m[0][1], name:"Grails ${m[0][1]}".toString(), url:url]
     }
-    sleep 500
 }
 
 lib.DataWriter.write("com.g2one.hudson.grails.GrailsInstaller",JSONObject.fromObject([list:json]));
