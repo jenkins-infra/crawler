@@ -25,6 +25,8 @@ z.entries().each { e ->
             o[p] = xml[p].toString();
         }
         o.timestamp = e.time
+        // TODO: copy it to our server
+        o.url = "https://raw.github.com/jenkinsci/submitted-recipes/${branch}/${o.id}.jrcp".toString()
         json << o;
     }
 }
