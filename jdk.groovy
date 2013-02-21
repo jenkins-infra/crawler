@@ -27,7 +27,9 @@ public class ListJDK {
         return new JSONObject()
                 .element("version", 2)
                 .element("data", new JSONArray()
-                        .element(family("JDK 7", parse("http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html")))
+                        .element(family("JDK 7", combine(
+                            parse("http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html"),
+                            parse("http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html"))))
                         .element(family("JDK 6", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase6-419409.html")))
                         .element(family("JDK 5", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase5-419410.html")))
                         .element(family("JDK 1.4", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase14-419411.html"))));
@@ -62,6 +64,7 @@ public class ListJDK {
             }
         });
         for (String n : releaseNames) {
+            if (n.contains("demo")) continue;   // we don't care about demo & sample bundles
             if (n.contains("jdk") || n.contains("j2sdk"))
                 releases.add(release(n,data.getJSONObject(n)));
         }
@@ -99,6 +102,12 @@ public class ListJDK {
         HtmlPage p = getPage(url);
 
         return (JSONObject)toJSON(p.executeJavaScript("downloads").getJavaScriptResult());
+    }
+
+    private JSONObject combine(JSONObject... args) {
+        JSONObject o = new JSONObject();
+        args.each { a -> o.putAll(a); }
+        return o;
     }
 
     private Object toJSON(Object o) {
