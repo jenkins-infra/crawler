@@ -16,6 +16,9 @@ if (dir.isDirectory() && new File(dir, ".git").isDirectory()) {
 def scriptlerDir = new File(dir, "scriptler")
 
 scriptlerDir.eachFileMatch(~/.+\.groovy/) { File f ->
+    if(f.name.equals('testMetaFormat.groovy')) {
+        return
+    }
     def m = (f.text =~ /(?ms)BEGIN META(.+?)END META/)
     if (m) {
         try {
