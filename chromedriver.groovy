@@ -1,27 +1,32 @@
 #!./lib/runner.groovy
 // Generates server-side metadata for chromedriver auto-installation
-import com.gargoylesoftware.htmlunit.html.*;
-import com.gargoylesoftware.htmlunit.WebClient
-
 import net.sf.json.*
+import groovy.util.XmlSlurper
 
-def wc = new WebClient()
-wc.javaScriptEnabled = wc.cssEnabled = false;
-def baseUrl = 'http://code.google.com/p/chromedriver/downloads/list'
-HtmlPage p = wc.getPage(baseUrl);
+def baseUrl = 'http://chromedriver.storage.googleapis.com/'
+def json = []
+def map = [:].withDefault {[:].withDefault {[:]}}
 
-def json = [];
+def xml = new XmlSlurper().parseText(new URL(baseUrl).text)
+xml.Contents.each {
+    def key = it.Key.text()
+    def m = key =~ /(.*)\/chromedriver_(.*?)(\d+)\.zip/
+    if (m) {
+        def (_, version, os, arch) = m[0]
+        map[os][arch][version] = key
+        json << ["id":"${os}${arch}_${version}".toString(), "url":baseUrl + key];
+    }
+}
 
-p.selectNodes("//a[@href]").each { HtmlAnchor e ->
-    def href = e.getHrefAttribute()
-    def textContent = e.getTextContent().trim()
-    if (!href.startsWith("detail?") || !textContent.endsWith(".zip"))   return;
-
-    def os = textContent.split("_")[1];
-
-    println textContent;
-    if (os!=null) {
-        json << ["id":os, "url":"http://chromedriver.googlecode.com/files/"+textContent];
+map.each { os, arch ->
+    if (arch.size() == 1) {
+        def latest = arch.find().value.max { it.key }
+        json << ["id":os, "url":baseUrl + latest.value];
+    } else {
+        arch.each { k, v ->
+            def latest = v.max { it.key }
+            json << ["id":os + k, "url":baseUrl + latest.value];
+        }
     }
 }
 
