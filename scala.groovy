@@ -22,7 +22,6 @@ p
   .grep({
     it.getHrefAttribute() ==~ pathAndVersionRegex 
   })
-  .reverse()
   .collect { HtmlAnchor e ->
     def file = e.getHrefAttribute()
     def url = new URI(baseUrl).resolve(new URI(file)).toString()
