@@ -12,7 +12,6 @@ text.split("\n").each { line ->
         def pair = line.split("=", 2)
         def version = pair[0]
         def dist = pair[1]
-	// def dist = props.getProperty(version)
 	json << ["id":version, "name":"SBuild ${version}".toString(), "url":dist];
 }
 
