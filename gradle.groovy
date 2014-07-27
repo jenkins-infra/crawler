@@ -11,7 +11,7 @@ HtmlPage p = wc.getPage(baseUrl + '/distributions');
 
 def json = [];
 
-p.selectNodes("//a[@href]").reverse().collect { HtmlAnchor e ->
+p.selectNodes("//a[@href]").collect { HtmlAnchor e ->
     def url = baseUrl + e.getHrefAttribute()
     println url
     def m = (url =~ /gradle-(.*)-bin.zip$/)
