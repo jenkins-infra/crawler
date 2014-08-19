@@ -21,8 +21,8 @@ webClient.setJavaScriptEnabled(false);
 
 // Fetch URLs in order from latest...
 HtmlPage latest = webClient.getPage(latestUrl)
-latest.selectNodes("//td/a[starts-with(@href, '/dl/')]").each { HtmlAnchor e ->
-	urls << e.getHrefAttribute().replace("/dl/", "https://storage.googleapis.com/golang/")
+latest.selectNodes("//td/a").each { HtmlAnchor e ->
+	urls << e.getHrefAttribute()
 }
 
 // ..to oldest
