@@ -35,7 +35,6 @@ releases.each { release ->
                 String url = "https://cli.run.pivotal.io/stable?release=$platform.id&version=$version&source=jenkins"
                 // call toString() to workaround "net.sf.json.JSONException: There is a cycle in the hierarchy!"
                 variants << [
-                        "id": "$version-$platform.id".toString(),
                         "os": "$platform.os".toString(),
                         "arch": "$platform.arch".toString(),
                         "url": url.toString()];
@@ -43,7 +42,7 @@ releases.each { release ->
 
             json << [
                     "name": "CloudFoundry CLI $version".toString(),
-                    "version": "$version".toString(),
+                    "id": "$version".toString(),
                     "variants": variants
             ]
         } else {
