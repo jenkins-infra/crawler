@@ -32,7 +32,11 @@ releases.each { release ->
         if (majorVersion >= 6) { // don't list versions older than 6.0.0
 
             platforms.each { platform ->
-                String url = "https://cli.run.pivotal.io/stable?release=$platform.id&version=$version&source=jenkins"
+                // workaround "java.io.EOFException: Unexpected end of ZLIB input stream"
+                // don't use the SSL/https download URL because it does a 302 to the non SSL URL and
+                // java.net.URL used by hudson.FilePath.installIfNecessaryFrom() does NOY follow redirect when the protocol
+                // goes from https to http
+                String url = "http://cli.run.pivotal.io/stable?release=$platform.id&version=$version&source=jenkins"
                 // call toString() to workaround "net.sf.json.JSONException: There is a cycle in the hierarchy!"
                 variants << [
                         "os": "$platform.os".toString(),
