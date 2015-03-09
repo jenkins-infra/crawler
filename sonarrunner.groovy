@@ -41,7 +41,7 @@ def listFromNewUrl() {
         if(m.find()) {
             ver=m.group(1)
             url = p.getFullyQualifiedUrl(a.hrefAttribute + "sonar-runner-dist-" + ver + ".zip");
-            return ["id":ver, "name": "Sonar Runner " + ver, "url":url.toExternalForm()]
+            return ["id":ver, "name": "SonarQube Runner " + ver, "url":url.toExternalForm()]
         }
         return null;
     }
