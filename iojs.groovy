@@ -1,6 +1,5 @@
-// #!./lib/runner.groovy
+#!./lib/runner.groovy
 
-// Generates server-side metadata for Gradle auto-installation
 import com.gargoylesoftware.htmlunit.html.*;
 import com.gargoylesoftware.htmlunit.WebClient
 
@@ -14,7 +13,6 @@ def json = [];
 
 p.selectNodes("//a[@href]").reverse().collect { HtmlAnchor e ->
     def url = baseUrl + "/" + e.getHrefAttribute()
-    println url
     String versionRegex = "v(\\d+(?:\\.\\d+)*)/";
     def m = (url =~ versionRegex)
     if (m) {
@@ -22,4 +20,4 @@ p.selectNodes("//a[@href]").reverse().collect { HtmlAnchor e ->
     }
 }
 
-lib.DataWriter.write("hudson.plugins.iojs.tools.IojsInstaller",JSONObject.fromObject([list:json]));
+lib.DataWriter.write("hudson.plugins.iojs.tools.IojsInstaller",JSONObject.fromObject([releases:json]));
