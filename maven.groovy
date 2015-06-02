@@ -29,28 +29,46 @@ def listFromURL(url) {
     }.findAll { it != null }
 }
 
-def listFromUrl(url, regex) {
-    def HtmlPage p = getHtmlPage(url)
-    def pattern = Pattern.compile(regex)
+def listFromUrl(url, pattern) {
+    wc = new WebClient();
+    wc.javaScriptEnabled = false;
+    wc.cssEnabled = false;
+
+    HtmlPage p = wc.getPage(url);
+    initialurl = url;
+    versionpattern = Pattern.compile("[0-9]([0-9.]+)");
+    pattern=Pattern.compile(pattern);
 
     return p.getAnchors().collect { HtmlAnchor a ->
-        def m = pattern.matcher(a.hrefAttribute)
-        if (m.matches()) {
-            return p.getFullyQualifiedUrl(a.hrefAttribute)
+        m = versionpattern.matcher(a.hrefAttribute)
+        if(m.find() ) {
+            l=a.hrefAttribute.length()-2;
+            ver=a.hrefAttribute.getAt(0..l);
+            url = p.getFullyQualifiedUrl(a.hrefAttribute);
+            HtmlPage pb = wc.getPage(url);
+            return pb.getAnchors().collect { HtmlAnchor a1 ->
+              n = pattern.matcher(a1.hrefAttribute)
+              if (n.find()) {
+                  urld = pb.getFullyQualifiedUrl(a1.hrefAttribute);
+              return ["id":ver, "name":ver, "url":urld.toExternalForm()]
+              }
+              return null;
+          }
         }
-        return null
-    }.findAll { it != null }
+        return null;
+    }.flatten().findAll { it!=null };
 }
 
+// Archives are coming from Apache
 def listFromOldURL() {
     return listFromURL("http://archive.apache.org/dist/maven/binaries/")
 }
 
+// Recent releases are coming from Maven central
+// Discussed with the Maven team here
+// http://mail-archives.apache.org/mod_mbox/maven-dev/201505.mbox/%3cCAFNCU--iq2nYb3wnO715CbcXN+S8umRTyRnfk4_JSZ2qCR+1fg@mail.gmail.com%3e
 def listFromNewUrl() {
-    return listFromUrl("http://archive.apache.org/dist/maven/", "maven-([0-9])/\$")
-            .collect { url -> listFromUrl(url, "([0-9\\.])+/\$") }.flatten()
-            .collect { url -> listFromUrl(url, "^binaries/\$") }.flatten()
-            .collect { url -> listFromURL(url) }.flatten()
+    return listFromUrl("http://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/", "maven-([0-9.]+)(-bin)?.zip\$")
 }
 
 def listAll() {
