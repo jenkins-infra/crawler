@@ -1,5 +1,5 @@
 #!./lib/runner.groovy
-// Generates server-side metadata for Ant & Maven
+// Generates server-side metadata for Ant
 import com.gargoylesoftware.htmlunit.WebClient
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor
 import com.gargoylesoftware.htmlunit.html.HtmlPage
@@ -47,4 +47,3 @@ def store(key,o) {
 }
 
 store("hudson.tasks.Ant.AntInstaller",  listUp("http://archive.apache.org/dist/ant/binaries/",  "ant-([0-9.]+)-bin.zip\$"))
-store("hudson.tasks.Maven.MavenInstaller",listUp("http://archive.apache.org/dist/maven/binaries/","maven-([0-9.]+)(-bin)?.zip\$"))
