@@ -6,13 +6,13 @@ import net.sf.json.*
 import com.gargoylesoftware.htmlunit.WebClient
 
 def wc = new WebClient()
-def baseUrl = 'http://dist.groovy.codehaus.org/distributions/'
+def baseUrl = 'https://dl.bintray.com/groovy/maven/'
 HtmlPage p = wc.getPage(baseUrl);
 
 def json = [];
 
 p.selectNodes("//a[@href]").reverse().collect { HtmlAnchor e ->
-    def url = baseUrl + e.getHrefAttribute()
+    def url = baseUrl + e.getHrefAttribute()[1..-1]
     println url
     def m = (url =~ /groovy-binary-(\d.\d.\d).zip$/)
     if (m) {
