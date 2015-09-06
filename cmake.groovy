@@ -1,4 +1,4 @@
-#!/usr/bin/env groovy
+#!./lib/runner.groovy
 // Generates server-side metadata for CMake auto-installation
 import com.gargoylesoftware.htmlunit.html.*;
 import net.sf.json.*
