@@ -6,7 +6,7 @@ import com.gargoylesoftware.htmlunit.WebClient
 import net.sf.json.*
 
 def wc = new WebClient()
-def baseUrl = 'http://nodejs.org/dist'
+def baseUrl = 'https://nodejs.org/dist'
 HtmlPage p = wc.getPage(baseUrl);
 
 def json = [];
