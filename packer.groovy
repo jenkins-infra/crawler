@@ -7,21 +7,16 @@ import com.gargoylesoftware.htmlunit.BrowserVersion
 
 import net.sf.json.*
 
-BrowserVersion browserVer = BrowserVersion.getDefault()
-def wc = new WebClient(browserVer)
-def baseUrl = 'http://dl.bintray.com/mitchellh/packer'
-HtmlPage p = wc.getPage(baseUrl);
+def url = "https://api.bintray.com/v1/packages/mitchellh/packer/packer/files".toURL()
+def files = JSONArray.fromObject(url.text)
 
 def json = [];
 
-p.selectNodes("//a[@href]").reverse().collect { HtmlAnchor e ->
-    def href = e.getHrefAttribute().replaceFirst(/^%/) {''}
-    def url = baseUrl + "/" + href
-    //println url
-    def m = (url =~ /.*(\d+.\d+.\d+)_(.*)_(.*).zip/)
+for (JSONObject file : files) {
+    def m = (file.get("path") =~ /.*(\d+.\d+.\d+)_(.*)_(.*).zip/)
     if (m) {
         def verId = "${m[0][1]}-${m[0][2]}-${m[0][3]}".toString()
-        json << ["id": verId, "name": "Packer ${m[0][1]} ${m[0][2]} (${m[0][3]})".toString(), "url": url];
+        json << ["id": verId, "name": "Packer ${m[0][1]} ${m[0][2]} (${m[0][3]})".toString(), "url": "https://dl.bintray.com/mitchellh/packer/" + file.get("path")];
     }
 }
 
