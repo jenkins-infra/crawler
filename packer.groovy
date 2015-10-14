@@ -15,7 +15,7 @@ HtmlPage p = wc.getPage(baseUrl);
 def json = [];
 
 p.selectNodes("//a[@href]").reverse().collect { HtmlAnchor e ->
-    def href = e.getHrefAttribute().replaceFirst(/^%/) {''}
+    def href = e.getHrefAttribute().replaceFirst(/^:/) {''}
     def url = baseUrl + "/" + href
     //println url
     def m = (url =~ /.*(\d+.\d+.\d+)_(.*)_(.*).zip/)
