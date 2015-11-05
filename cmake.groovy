@@ -4,7 +4,7 @@ import com.gargoylesoftware.htmlunit.html.*;
 import net.sf.json.*
 import com.gargoylesoftware.htmlunit.WebClient
 
-def baseUrl = 'https://www.cmake.org/files/'
+def baseUrl = 'https://cmake.org/files/'
 
 def wc = new WebClient()
 wc.setJavaScriptEnabled(false);
