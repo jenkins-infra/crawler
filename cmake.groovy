@@ -1,12 +1,13 @@
 #!./lib/runner.groovy
 // Generates server-side metadata for CMake auto-installation
-import com.gargoylesoftware.htmlunit.html.*;
+import com.gargoylesoftware.htmlunit.html.*
 import net.sf.json.*
 import com.gargoylesoftware.htmlunit.WebClient
+import com.gargoylesoftware.htmlunit.BrowserVersion
 
 def baseUrl = 'https://cmake.org/files/'
 
-def wc = new WebClient()
+def wc = new WebClient( new BrowserVersion( "", null, "JenkinsBackendCrawler", 1.0f))
 wc.setJavaScriptEnabled(false);
 def releases = [:]
 
