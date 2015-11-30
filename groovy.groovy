@@ -20,4 +20,4 @@ p.selectNodes("//a[@href]").reverse().collect { HtmlAnchor e ->
     }
 }
 
-lib.DataWriter.write("hudson.plugins.groovy.GroovyInstaller",JSONObject.fromObject([list:json]));
+lib.DataWriter.write("hudson.plugins.groovy.GroovyInstaller",JSONObject.fromObject([list:json.sort { it.id }.reverse()]));
