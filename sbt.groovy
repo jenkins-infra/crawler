@@ -5,23 +5,7 @@ import com.gargoylesoftware.htmlunit.WebClient
 import hudson.util.VersionNumber
 import net.sf.json.*
 
-def listFromOldURL() {
-    def wc = new WebClient()
-    def baseUrl = 'http://scalasbt.artifactoryonline.com/scalasbt/sbt-native-packages/org/scala-sbt/sbt/'
-    HtmlPage p = wc.getPage(baseUrl);
-
-    return p.selectNodes("//a[@href]").reverse().collect { HtmlAnchor e ->
-        def url = baseUrl + e.getHrefAttribute()
-        println url
-        def m = (url =~ /([0-9]{1,}\.[0-9]{2}\.[0-9]{1}(-.*)?)\/$/)
-        if (m) {
-            println m[0][1]
-            return ["id": m[0][1], "name": "sbt ${m[0][1]}".toString(), "url": url + "sbt.zip"];
-        }
-    }
-}
-
-def listFromNewUrl() {
+def listFromBintray() {
     def url = "https://api.bintray.com/v1/packages/sbt/native-packages/sbt".toURL()
 	def bintray = JSONObject.fromObject(url.text)
 
@@ -33,14 +17,7 @@ def listFromNewUrl() {
 }
 
 def listAll() {
-    def listFromNewUrl = listFromNewUrl()
-    def idsFromNewUrl = listFromNewUrl.collect { it -> it.id }
-
-    def listFromOldURL = listFromOldURL()
-            .findAll { it != null }
-            .collect { it -> !idsFromNewUrl.contains(it.id) ? it : null }
-
-    return (listFromNewUrl + listFromOldURL)
+    return listFromBintray()
             .findAll { it != null }
             .sort { o1,o2 ->
         try {
