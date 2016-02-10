@@ -1,30 +1,20 @@
 #!./lib/runner.groovy
+import com.gargoylesoftware.htmlunit.html.*;
+import net.sf.json.*
+import com.gargoylesoftware.htmlunit.WebClient
 
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
-
-def downloadUrl = "https://dl.bintray.com/mitchellh/terraform/"
-
-def url = "https://api.bintray.com/v1/packages/mitchellh/terraform/terraform/files".toURL()
-
-def files = JSONArray.fromObject(url.text)
-
-def json = [];
-
-for (JSONObject file : files) {
-    def match = (file.get("path") =~ /.*(\d+.\d+.\d+)_(.*)_(.*).zip/)
-    if (match) {
-        def versionID = "${match[0][1]}-${match[0][2]}-${match[0][3]}".toString()
-        json << [
-                "id": versionID,
-                "name": "Terraform ${match[0][1]} ${match[0][2]} (${match[0][3]})".toString(),
-                "url": downloadUrl + file.get("path")
-        ];
+def baseUrl = 'https://releases.hashicorp.com'
+def json = []
+def wc = new WebClient()
+HtmlPage p = wc.getPage("${baseUrl}/terraform/")
+p.selectNodes("//a[@href]").grep { it.hrefAttribute =~ /\/terraform\/.*/ }.each {
+    wc.getPage("${baseUrl}${it.hrefAttribute}").selectNodes("//a[@href]").each {
+        def m = (it.textContent =~ /terraform.*(\d+.\d+.\d+)_(.*)_(.*).zip/)
+        if (m) {
+            def verId = "${m[0][1]}-${m[0][2]}-${m[0][3]}".toString()
+            json << ["id": verId, "name": "Terraform ${m[0][1]} ${m[0][2]} (${m[0][3]})".toString(), "url": "${baseUrl}${it.hrefAttribute}".toString()];
+        }
     }
 }
-
-json = json.reverse()
 
 lib.DataWriter.write("org.jenkinsci.plugins.terraform.TerraformInstaller", JSONObject.fromObject([list:json]));
