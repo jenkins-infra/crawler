@@ -17,6 +17,7 @@ public class ListJDK {
         wc = new WebClient();
         wc.setCssEnabled(false);
         wc.setThrowExceptionOnScriptError(false);
+        wc.setThrowExceptionOnFailingAjax(false);
     }
 
     public void main() throws Exception {
