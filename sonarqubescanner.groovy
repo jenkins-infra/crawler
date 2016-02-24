@@ -8,7 +8,7 @@ import net.sf.json.JSONObject
 import hudson.util.VersionNumber
 
 def listFromOldCodehausURL() {
-    def url = "http://repo1.maven.org/maven2/org/codehaus/sonar-plugins/sonar-runner/";
+    def url = "https://repo1.maven.org/maven2/org/codehaus/sonar-plugins/sonar-runner/";
     def wc = new WebClient()
     wc.javaScriptEnabled = false;
     wc.cssEnabled = false;
@@ -28,7 +28,7 @@ def listFromOldCodehausURL() {
 }
 
 def listFromNewCodehausUrl() {
-    def url = "http://repo1.maven.org/maven2/org/codehaus/sonar/runner/sonar-runner-dist/";
+    def url = "https://repo1.maven.org/maven2/org/codehaus/sonar/runner/sonar-runner-dist/";
     def wc = new WebClient()
     wc.javaScriptEnabled = false;
     wc.cssEnabled = false;
@@ -48,7 +48,7 @@ def listFromNewCodehausUrl() {
 }
 
 def listFromNewSonarSourceUrl() {
-    def url = "http://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/";
+    def url = "https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/";
     def wc = new WebClient()
     wc.javaScriptEnabled = false;
     wc.cssEnabled = false;
