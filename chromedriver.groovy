@@ -20,11 +20,33 @@ xml.Contents.each {
 
 map.each { os, arch ->
     if (arch.size() == 1) {
-        def latest = arch.find().value.max { it.key }
+        def latest = arch.find().value.max { a, b ->
+            List verA = a.key.tokenize('.')
+            List verB = b.key.tokenize('.')
+            def commonIndices = Math.min(verA.size(), verB.size())
+            for (int i = 0; i < commonIndices; ++i) {
+                def numA = verA[i].toInteger()
+                def numB = verB[i].toInteger()
+                if (numA != numB) {
+                    return numA <=> numB
+                }
+            }
+            verA.size() <=> verB.size() }
         json << ["id":os, "url":baseUrl + latest.value];
     } else {
         arch.each { k, v ->
-            def latest = v.max { it.key }
+            def latest = v.max { a, b ->
+                List verA = a.key.tokenize('.')
+                List verB = b.key.tokenize('.')
+                def commonIndices = Math.min(verA.size(), verB.size())
+                for (int i = 0; i < commonIndices; ++i) {
+                    def numA = verA[i].toInteger()
+                    def numB = verB[i].toInteger()
+                    if (numA != numB) {
+                        return numA <=> numB
+                    }
+                }
+                verA.size() <=> verB.size() }
             json << ["id":os + k, "url":baseUrl + latest.value];
         }
     }
