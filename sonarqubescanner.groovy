@@ -7,8 +7,8 @@ import java.util.regex.Pattern
 import net.sf.json.JSONObject
 import hudson.util.VersionNumber
 
-def listFromOldURL() {
-    def url = "http://repo1.maven.org/maven2/org/codehaus/sonar-plugins/sonar-runner/";
+def listFromOldCodehausURL() {
+    def url = "https://repo1.maven.org/maven2/org/codehaus/sonar-plugins/sonar-runner/";
     def wc = new WebClient()
     wc.javaScriptEnabled = false;
     wc.cssEnabled = false;
@@ -21,14 +21,14 @@ def listFromOldURL() {
         if(m.find()) {
             ver=m.group(1)
             url = p.getFullyQualifiedUrl(a.hrefAttribute + "sonar-runner-" + ver + ".zip");
-            return ["id":ver, "name": "Sonar Runner " + ver, "url":url.toExternalForm()]
+            return ["id":ver, "name": "SonarQube Scanner " + ver, "url":url.toExternalForm()]
         }
         return null;
     }
 }
 
-def listFromNewUrl() {
-    def url = "http://repo1.maven.org/maven2/org/codehaus/sonar/runner/sonar-runner-dist/";
+def listFromNewCodehausUrl() {
+    def url = "https://repo1.maven.org/maven2/org/codehaus/sonar/runner/sonar-runner-dist/";
     def wc = new WebClient()
     wc.javaScriptEnabled = false;
     wc.cssEnabled = false;
@@ -41,14 +41,34 @@ def listFromNewUrl() {
         if(m.find()) {
             ver=m.group(1)
             url = p.getFullyQualifiedUrl(a.hrefAttribute + "sonar-runner-dist-" + ver + ".zip");
-            return ["id":ver, "name": "SonarQube Runner " + ver, "url":url.toExternalForm()]
+            return ["id":ver, "name": "SonarQube Scanner " + ver, "url":url.toExternalForm()]
+        }
+        return null;
+    }
+}
+
+def listFromNewSonarSourceUrl() {
+    def url = "https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/";
+    def wc = new WebClient()
+    wc.javaScriptEnabled = false;
+    wc.cssEnabled = false;
+    HtmlPage p = wc.getPage(url);
+    def pattern = Pattern.compile("^([0-9][0-9\\.]+)/");
+
+    return p.getAnchors().collect { HtmlAnchor a ->
+        m = pattern.matcher(a.hrefAttribute)
+        println(a.hrefAttribute)
+        if(m.find()) {
+            ver=m.group(1)
+            url = p.getFullyQualifiedUrl(a.hrefAttribute + "sonar-scanner-cli-" + ver + ".zip");
+            return ["id":ver, "name": "SonarQube Scanner " + ver, "url":url.toExternalForm()]
         }
         return null;
     }
 }
 
 def listAll() {
-  return (listFromOldURL() + listFromNewUrl())
+  return (listFromOldCodehausURL() + listFromNewCodehausUrl() + listFromNewSonarSourceUrl())
     .findAll { it!=null }.sort { o1,o2 ->
         try {
             def v1 = new VersionNumber(o1.id)
