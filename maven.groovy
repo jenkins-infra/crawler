@@ -61,18 +61,18 @@ def listFromUrl(url, pattern) {
 
 // Archives are coming from Apache
 def listFromOldURL() {
-    return listFromURL("http://archive.apache.org/dist/maven/binaries/")
+    return listFromURL("https://archive.apache.org/dist/maven/binaries/")
 }
 
 // Recent releases are coming from Maven central
 // Discussed with the Maven team here
 // http://mail-archives.apache.org/mod_mbox/maven-dev/201505.mbox/%3cCAFNCU--iq2nYb3wnO715CbcXN+S8umRTyRnfk4_JSZ2qCR+1fg@mail.gmail.com%3e
 def listFromNewUrl() {
-    return listFromUrl("http://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/", "maven-([0-9.]+)(-bin)?.zip\$")
+    return listFromUrl("https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/", "maven-([0-9.]+)(-bin)?.zip\$")
 }
 
 def listAll() {
-    return (listFromOldURL() + listFromNewUrl())
+    return (listFromNewUrl() + listFromOldURL())
             .unique { o1, o2 -> o1.id <=> o2.id }
             .sort { o1, o2 ->
                 try {
