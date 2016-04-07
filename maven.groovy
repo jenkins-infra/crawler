@@ -72,7 +72,7 @@ def listFromNewUrl() {
 }
 
 def listAll() {
-    return (listFromOldURL() + listFromNewUrl())
+    return (listFromNewUrl() + listFromOldURL())
             .unique { o1, o2 -> o1.id <=> o2.id }
             .sort { o1, o2 ->
                 try {
