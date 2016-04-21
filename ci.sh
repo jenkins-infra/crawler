@@ -18,6 +18,5 @@ cd updates
 
 # pushing the tool update data to updates.jenkins-ci.org
 cd ..
-rsync -avz --exclude=.svn updates/ www-data@updates.jenkins-ci.org:/var/www/updates.jenkins-ci.org/updates/
-rsync -avz --exclude=.svn updates/ www-data@updates.jenkins-ci.org:/var/www/updates2.jenkins-ci.org/updates/
+rsync -avz --exclude=.svn updates/ www-data@updates.jenkins-ci.org:/var/www/updates.jenkins.io/updates/
 
