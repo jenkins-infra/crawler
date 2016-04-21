@@ -9,7 +9,7 @@ mvn -e clean install
 
 for f in *.groovy
 do
-  ./$f || true
+  groovy -Dgrape.config=./grapeConfig.xml $f || true
 done
 
 mkdir updates || true
