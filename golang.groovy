@@ -5,30 +5,20 @@ import com.gargoylesoftware.htmlunit.WebClient
 
 import net.sf.json.*
 
-// Fetch the latest downloads from the Go website
-def latestUrl = "http://golang.org/dl/"
+// Fetch the list of downloads from the Go website
+def downloadsUrl = "http://golang.org/dl/"
 
-// Also fetch the list of downloads archived at Google Code, ordered newest to oldest.
-// We can't just scrape their Atom feed, as it only contains files tagged as "current"
-def olderUrl = "https://code.google.com/p/go/downloads/list?can=1&sort=-uploaded&num=10000"
-
-// Gather a list of URLs from both sources
+// Gather a list of URLs
 def urls = []
 
 // Disable JS, as we don't care about it
 WebClient webClient = new WebClient()
 webClient.setJavaScriptEnabled(false);
 
-// Fetch URLs in order from latest...
-HtmlPage latest = webClient.getPage(latestUrl)
-latest.selectNodes("//td/a").each { HtmlAnchor e ->
+// Fetch the page and gather the links
+HtmlPage page = webClient.getPage(downloadsUrl)
+page.selectNodes("//td/a").each { HtmlAnchor e ->
 	urls << e.getHrefAttribute()
-}
-
-// ..to oldest
-HtmlPage older = webClient.getPage(olderUrl)
-older.selectNodes("//td/a[starts-with(@href, '//go.googlecode.com/files/')]").each { HtmlAnchor e ->
-	urls << "https:" + e.getHrefAttribute()
 }
 
 // Build a map of Go versions -> platform archives
