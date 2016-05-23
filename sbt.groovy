@@ -6,7 +6,7 @@ import hudson.util.VersionNumber
 import net.sf.json.*
 
 def listFromBintray() {
-    def url = "https://api.bintray.com/v1/packages/sbt/native-packages/sbt".toURL()
+    def url = "https://bintray.com/api/v1/packages/sbt/native-packages/sbt".toURL()
 	def bintray = JSONObject.fromObject(url.text)
 
 	bintray["versions"].collect {
