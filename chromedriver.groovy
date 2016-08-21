@@ -3,7 +3,7 @@
 import net.sf.json.*
 import groovy.util.XmlSlurper
 
-def baseUrl = 'http://chromedriver.storage.googleapis.com/'
+def baseUrl = 'https://chromedriver.storage.googleapis.com/'
 def json = []
 def map = [:].withDefault {[:].withDefault {[:]}}
 

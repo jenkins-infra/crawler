@@ -16,7 +16,7 @@ def json = [];
         def m = e.getHrefAttribute() =~ /^.*mongodb-$osname-$arch-(.*?)\.(tgz|zip)$/
         if (m) {
             String version = "${osname}-${arch}-${m[0][1]}"
-            json << [id:version, name:version, url:m[0][0]]
+            json << [id:version, name:version, url:m[0][0].replace('http://', 'https://')]
         }
     }
 }}
