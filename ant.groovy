@@ -46,4 +46,4 @@ def store(key,o) {
     lib.DataWriter.write(key,envelope);
 }
 
-store("hudson.tasks.Ant.AntInstaller",  listUp("http://archive.apache.org/dist/ant/binaries/",  "ant-([0-9.]+)-bin.zip\$"))
+store("hudson.tasks.Ant.AntInstaller",  listUp("https://archive.apache.org/dist/ant/binaries/",  "ant-([0-9.]+)-bin.zip\$"))
