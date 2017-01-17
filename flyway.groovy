@@ -20,7 +20,7 @@ def listFromMavenRepo() {
 
   def wc=webclient();
   HtmlPage p = wc.getPage(url);
-  def pattern = Pattern.compile("^([0-9][0-9\\.]+)/\$");
+  def pattern = Pattern.compile("^([0-9]+.*)/\$");
 
   p.getAnchors().collect { HtmlAnchor a ->
     m = pattern.matcher(a.hrefAttribute)
