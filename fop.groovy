@@ -46,4 +46,4 @@ def store(key,o) {
     lib.DataWriter.write(key, envelope);
 }
 
-store("org.jenkinsci.plugins.fop.FopInstaller", listUp("http://archive.apache.org/dist/xmlgraphics/fop/binaries/", "fop-([0-9.]+)-bin.zip\$"))
+store("org.jenkinsci.plugins.fop.FopInstaller", listUp("https://archive.apache.org/dist/xmlgraphics/fop/binaries/", "fop-([0-9.]+)-bin.zip\$"))
