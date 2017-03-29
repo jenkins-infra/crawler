@@ -1,5 +1,5 @@
 #!./lib/runner.groovy
-// Generates server-side metadata for MSBuild SonarQube Runner
+// Generates server-side metadata for SonarQube Scanner for MSBuild
 import net.sf.json.*
 
 def url = "https://api.github.com/repos/SonarSource/sonar-scanner-msbuild/releases".toURL()
