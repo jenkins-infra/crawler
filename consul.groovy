@@ -1,5 +1,5 @@
 #!./lib/runner.groovy
-// Generates server-side metadata for Packer auto-installation
+// Generates server-side metadata for Consul auto-installation
 import com.gargoylesoftware.htmlunit.html.*;
 import net.sf.json.*
 import com.gargoylesoftware.htmlunit.WebClient
