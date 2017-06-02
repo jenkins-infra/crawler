@@ -72,6 +72,6 @@ flyway_distributions.sort { o1, o2 ->
   }
 }
 
-lib.DataWriter.write("hudson.plugins.flyway.FlywayInstaller", JSONObject.fromObject([list: flyway_distributions]));
+lib.DataWriter.write("sp.sd.flywayrunner.installation.FlywayInstaller", JSONObject.fromObject([list: flyway_distributions]));
 
 
