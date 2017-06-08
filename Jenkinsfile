@@ -16,13 +16,5 @@ pipeline {
                 '''
             }
         }
-        stage("Deploy") {
-            when {
-                branch 'master'
-            }
-            steps {
-                sh './ci.sh'
-            }
-        }
     }
 }
