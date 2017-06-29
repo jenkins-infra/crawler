@@ -39,11 +39,10 @@ node('linux') {
             timestamps {
                 if (infra.isTrusted()) {
                     withCredentials([[$class: 'ZipFileBinding', credentialsId: 'update-center-signing', variable: 'SECRET']]) {
-                        withEnv([
-                            'JENKINS_SIGNER="-key \\"$SECRET/update-center.key\\" -certificate \\"$SECRET/update-center.cert\\" -root-certificate \\"$SECRET/jenkins-update-center-root-ca.crt\\"',
-                        ]) {
-                            sh command
-                        }
+                        sh """
+                            export JENKINS_SIGNER="-key \"$SECRET/update-center.key\" -certificate \"$SECRET/update-center.cert\" -root-certificate \"$SECRET/jenkins-update-center-root-ca.crt\"";
+                            ${command}
+                        """
                     }
                 }
                 else {
@@ -61,9 +60,7 @@ node('linux') {
 
     if (infra.isTrusted()) {
         stage('Publish') {
-            dir('updates') {
-                echo 'updates/ created'
-            }
+            sh 'mkdir -p updates'
             sh 'cp target/*.json target/*.html updates'
             sshagent(['updates-rsync-key']) {
                 sh 'rsync -avz  -e \'ssh -o StrictHostKeyChecking=no\' --exclude=.svn updates/ www-data@updates.jenkins.io:/var/www/updates.jenkins.io/updates/'
