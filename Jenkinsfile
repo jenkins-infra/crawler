@@ -1,9 +1,16 @@
 #!/usr/bin/env groovy
 
 
-properties([
-        buildDiscarder(logRotator(numToKeepStr: '5')),
-])
+List p = [buildDiscarder(logRotator(numToKeepStr: '5'))]
+
+/* When we're running inside our trusted infrastructure, we want to
+ * re-generate the tools meta-data every four hours
+ */
+if (infra.isTrusted()) {
+    p.add(pipelineTriggers([cron('H */4 * * *')]))
+}
+
+properties(p)
 
 node('linux') {
     stage ('Prepare') {
@@ -17,7 +24,7 @@ node('linux') {
                 "PATH+MVN=${tool 'mvn'}/bin",
                 "JAVA_HOME=${tool 'jdk8'}",
                 "PATH+JAVA=${tool 'jdk8'}/bin"
-    ]) {
+        ]) {
             String command = '''
                 mvn -e clean install;
 
@@ -26,17 +33,20 @@ node('linux') {
                   groovy -Dgrape.config=./grapeConfig.xml ./lib/runner.groovy $f || true
                 done
             '''
-            if (infra.isTrusted()) {
-                withCredentials([[$class: 'ZipFileBinding', credentialsId: 'update-center-signing', variable: 'SECRET']]) {
-                    withEnv([
-                        'JENKINS_SIGNER="-key \"$SECRET/update-center.key\" -certificate \"$SECRET/update-center.cert\" -root-certificate \"$SECRET/jenkins-update-center-root-ca.crt\"',
-                    ]) {
-                        sh command
+
+            timestamps {
+                if (infra.isTrusted()) {
+                    withCredentials([[$class: 'ZipFileBinding', credentialsId: 'update-center-signing', variable: 'SECRET']]) {
+                        withEnv([
+                            'JENKINS_SIGNER="-key \"$SECRET/update-center.key\" -certificate \"$SECRET/update-center.cert\" -root-certificate \"$SECRET/jenkins-update-center-root-ca.crt\"',
+                        ]) {
+                            sh command
+                        }
                     }
                 }
-            }
-            else {
-                sh command
+                else {
+                    sh command
+                }
             }
         }
     }
