@@ -28,7 +28,9 @@ public class ListJDK {
         return new JSONObject()
                 .element("version", 2)
                 .element("data", new JSONArray()
-                        .element(family("JDK 9", parse("http://www.oracle.com/technetwork/java/javase/downloads/jdk9-downloads-3848520.html")))
+                        .element(family("JDK 9", combine(
+                            parse("http://www.oracle.com/technetwork/java/javase/downloads/java-archive-javase9-3934878.html"),
+                            parse("http://www.oracle.com/technetwork/java/javase/downloads/jdk9-downloads-3848520.html"))))
                         .element(family("JDK 8", combine(
                             parse("http://www.oracle.com/technetwork/java/javase/downloads/java-archive-javase8-2177648.html"),
                             parse("http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html"))))
