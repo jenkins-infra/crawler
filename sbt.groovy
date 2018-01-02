@@ -2,6 +2,7 @@
 // Generates server-side metadata for sbt-launch auto-installation
 import com.gargoylesoftware.htmlunit.html.*;
 import com.gargoylesoftware.htmlunit.WebClient
+import com.gargoylesoftware.htmlunit.xml.XmlPage
 import hudson.util.VersionNumber
 import net.sf.json.*
 
@@ -16,8 +17,37 @@ def listFromBintray() {
     }
 }
 
+def listFromMaven() {
+    String baseUrl = 'https://repo1.maven.org/maven2/org/scala-sbt/sbt'
+    URL metaUrl = new URL("$baseUrl/maven-metadata.xml")
+
+    WebClient wc = new WebClient()
+    XmlPage meta = wc.getPage(metaUrl)
+
+    List<String> versions = meta.getByXPath("//metadata/versioning/versions/version")
+            .collect() { DomElement e -> e.getTextContent() }
+            .findAll() { e -> !e.contains('RC') }
+            .reverse()
+
+    return versions.collect() { version ->
+        return ["id"  : version,
+                "name": version,
+                "url" : getMavenArtifactUrl(baseUrl, version)
+        ]
+    }
+}
+
+def getMavenArtifactUrl(String baseUrl, String version) {
+    def artifactName = String.format("sbt-%s.jar", version)
+    return String.format('%s/%s/%s', baseUrl, version, artifactName);
+}
+
 def listAll() {
-    return listFromBintray()
+    List versions = new ArrayList()
+    versions.addAll(listFromBintray())
+    versions.addAll(listFromMaven())
+
+    return versions
             .findAll { it != null }
             .sort { o1,o2 ->
         try {
