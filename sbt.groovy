@@ -32,14 +32,13 @@ def listFromMaven() {
     return versions.collect() { version ->
         return ["id"  : version,
                 "name": version,
-                "url" : getMavenArtifactUrl(baseUrl, version)
+                "url" : getGithubArtifactUrl(version)
         ]
     }
 }
 
-def getMavenArtifactUrl(String baseUrl, String version) {
-    def artifactName = String.format("sbt-%s.jar", version)
-    return String.format('%s/%s/%s', baseUrl, version, artifactName);
+def getGithubArtifactUrl(String version) {
+    return String.format("https://github.com/sbt/sbt/releases/download/v%s/sbt-%s.zip", version, version)
 }
 
 def listAll() {
