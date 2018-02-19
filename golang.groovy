@@ -25,7 +25,7 @@ page.selectNodes("//td/a").each { HtmlAnchor e ->
 def releases = [:]
 urls.each { url ->
     // We only want release archives; ignore source packages and beta/RC versions
-    if (url =~ /\.src\.tar\.gz$/ || url =~ /(beta|rc)\d+\./) {
+    if (url =~ /\.src\.tar\.gz$/ || url =~ /(beta|rc)\d+\./ || url =~ /bootstrap/) {
         return
     }
 
