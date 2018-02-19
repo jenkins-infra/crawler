@@ -25,14 +25,15 @@ page.selectNodes("//td/a").each { HtmlAnchor e ->
 def releases = [:]
 urls.each { url ->
     // We only want release archives; ignore source packages and beta/RC versions
-    if (url =~ /\.src\.tar\.gz$/ || url =~ /(beta|rc)\d+\./) {
+    if (url =~ /\.src\.tar\.gz$/ || url =~ /(beta|rc)\d+\./ || url =~ /bootstrap/) {
         return
     }
 
     // Extract the version info from archive filename (ignore .msi or .pkg installers), e.g.:
     //  go1.2.1.darwin-amd64-osx10.8.tar.gz
     //  go.go1.windows-386.zip
-    def parts = (url =~ /go(?:\.go)?(\d(?:\.\d)*)\.(?:([^-]+)-([^-]+)(?:-(.+))?)\.(?:tar\.gz|zip)/)
+    //  go1.10.linux-amd64.tar.gz
+    def parts = (url =~ /go(?:\.go)?(\d(?:\.\d+)*)\.(?:([^-]+)-([^-]+)(?:-(.+))?)\.(?:tar\.gz|zip)/)
     if (!parts) {
         return
     }
