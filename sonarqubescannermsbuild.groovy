@@ -13,8 +13,10 @@ for (JSONObject release : releases) {
     def fileName
     if (tagName.startsWith("1") || tagName.equals("2.0") || tagName.equals("2.1")) {
       fileName = "MSBuild.SonarQube.Runner-${tagName}.zip"
-    } else {
+    } else if (tagName.startsWith("2.") || tagName.startsWith("3.") || tagName.startsWith("4.0.")) {
       fileName = "sonar-scanner-msbuild-${tagName}.zip"
+    } else {
+      fileName = "sonar-scanner-msbuild-${tagName}-net46.zip"
     }
     json << ["id": tagName,
              "name": "SonarQube Scanner for MSBuild ${tagName}".toString(), 
