@@ -22,15 +22,15 @@ page.selectNodes("//td/a").each { HtmlAnchor e ->
 // Build a map of Rust versions -> platform archives
 def releases = [:]
 urls.each { url ->
-    // We only want release archives; ignore source packages and beta/RC versions
-    if (url =~ /\.src\.tar\.gz$/ || url =~ /.sha256|.asc$/ || url =~ /(beta|rc)\d+\./ || url =~ /bootstrap/) {
+    // We only want release archives; ignore source packages and beta/nightly versions
+    if (url =~ /\.src\.tar\.gz$/ || url =~ /.sha256|.asc$/ || url =~ /(beta|nightly)\d+\./ || url =~ /bootstrap/) {
         return
     }
 
-    // Extract the version info from archive filename (ignore .msi or .pkg installers), e.g.:
-    //  go1.2.1.darwin-amd64-osx10.8.tar.gz
-    //  go.go1.windows-386.zip
-    //  go1.10.linux-amd64.tar.gz
+    // Extract the version info from archive filename (ignore .exe installers, drops `unknown` from metadata), e.g.:
+    //  rust-1.9.0-x86_64-apple-darwin.tar.gz
+    //  rust-1.25.0-x86_64-pc-windows-gnu.tar.gz
+    //  rust-1.22.1-arm-unknown-linux-gnueabi.tar.gz
     def parts = (url =~ /rust(?:\.rust)?-(\d(?:\.\d+)*)\.(?:([^-]+)-([^-]+)(?:-(.+))?)\.(?:tar\.gz|zip)/)
     if (!parts) {
         return
