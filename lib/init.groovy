@@ -8,7 +8,7 @@ import java.util.logging.*;
 @Grapes([
     @Grab("net.sourceforge.nekohtml:nekohtml:1.9.13"),
     @Grab("org.jenkins-ci:htmlunit:2.6-jenkins-4"),
-    @Grab("org.jenkins-ci:update-center2:1.20")
+    @Grab("org.jenkins-ci:update-center2:2.0")
 ])
 class init {
     static {
