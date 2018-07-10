@@ -1,5 +1,5 @@
 #!./lib/runner.groovy
-// Generates server-side metadata for SonarQube Scanner for MSBuild
+// Generates server-side metadata for SonarScanner for MSBuild
 import net.sf.json.*
 
 def url = "https://api.github.com/repos/SonarSource/sonar-scanner-msbuild/releases".toURL()
@@ -10,19 +10,27 @@ def json = []
 for (JSONObject release : releases) {
   def tagName = release.get("tag_name")
   if (!release.get("draft") && !release.get("prerelease") && !tagName.toLowerCase().contains("vsts")) {
-    def fileName
+
     if (tagName.startsWith("1") || tagName.equals("2.0") || tagName.equals("2.1")) {
-      fileName = "MSBuild.SonarQube.Runner-${tagName}.zip"
+       json << ["id": tagName,
+              "name": "SonarScanner for MSBuild ${tagName}".toString(),
+              "url": "https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/${tagName}/MSBuild.SonarQube.Runner-${tagName}.zip".toString()];
+
     } else if (tagName.startsWith("2.") || tagName.startsWith("3.") || tagName.startsWith("4.0.")) {
-      fileName = "sonar-scanner-msbuild-${tagName}.zip"
+      json << ["id": tagName,
+              "name": "SonarScanner for MSBuild ${tagName}".toString(),
+              "url": "https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/${tagName}/sonar-scanner-msbuild-${tagName}.zip".toString()];
+
     } else {
-      fileName = "sonar-scanner-msbuild-${tagName}-net46.zip"
+      json << ["id": tagName,
+             "name": "SonarScanner for MSBuild ${tagName} - .NET Fwk 4.6".toString(),
+             "url": "https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/${tagName}/sonar-scanner-msbuild-${tagName}-net46.zip".toString()];
+
+      json << ["id": "${tagName}-netcore".toString(),
+             "name": "SonarScanner for MSBuild ${tagName} - .NET Core 2.0".toString(),
+             "url": "https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/${tagName}/sonar-scanner-msbuild-${tagName}-netcoreapp2.0.zip".toString()];
     }
-    json << ["id": tagName,
-             "name": "SonarQube Scanner for MSBuild ${tagName}".toString(), 
-             "url": "https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/${tagName}/${fileName}".toString()];
   }
 }
 
 lib.DataWriter.write("hudson.plugins.sonar.MsBuildSonarQubeRunnerInstaller",JSONObject.fromObject([list:json]));
-
