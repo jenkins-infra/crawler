@@ -8,12 +8,30 @@ import net.sf.json.JSONObject
 
 def getList() {
     List versions = new ArrayList()
-    versions.addAll(getBintrayVersions())
+    versions.addAll(getBintrayMavenVersions())
+    versions.addAll(getBintrayGenericVersions())
     versions.addAll(getSonatypeVersions())
     return versions
 }
+def getBintrayMavenVersions() {
+    String baseUrl = 'https://dl.bintray.com/qameta/maven/io/qameta/allure/allure-commandline'
+    WebClient wc = new WebClient()
+    HtmlPage meta = wc.getPage(baseUrl)
 
-def getBintrayVersions() {
+    List<String> versions = meta.getByXPath("//body/pre")
+            .collect() { DomElement e -> e.getTextContent().replace("/", "") }
+            .findAll() { e -> !e.contains(".xml") && !e.contains('BETA') }
+            .reverse()
+
+    return versions.collect() { version ->
+        return ["id"  : version,
+                "name": version,
+                "url" : String.format('%s/%s/allure-commandline-%s.zip', baseUrl, version, version)
+        ]
+    }
+}
+
+def getBintrayGenericVersions() {
     String baseUrl = 'https://dl.bintray.com/qameta/generic/io/qameta/allure/allure'
     WebClient wc = new WebClient()
     HtmlPage meta = wc.getPage(baseUrl)
@@ -26,7 +44,7 @@ def getBintrayVersions() {
     return versions.collect() { version ->
         return ["id"  : version,
                 "name": version,
-                "url" : getBintrayArtifactUrl(baseUrl, version)
+                "url" : String.format('%s/%s/allure-%s.zip', baseUrl, version, version)
         ]
     }
 }
@@ -49,10 +67,6 @@ def getSonatypeVersions() {
                 "url" : getSonatypeArtifactUrl(baseUrl, version)
         ]
     }
-}
-
-def getBintrayArtifactUrl(String baseUrl, String version) {
-    return String.format('%s/%s/allure-%s.zip', baseUrl, version, version)
 }
 
 def getSonatypeArtifactUrl(String baseUrl, String version) {
