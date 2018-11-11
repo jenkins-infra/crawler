@@ -8,19 +8,21 @@ import net.sf.json.JSONObject
 
 def getList() {
     List versions = new ArrayList()
-    versions.addAll(getBintrayMavenVersions())
-    versions.addAll(getBintrayGenericVersions())
+    versions.addAll(getCentralVersions())
+    versions.addAll(getBintrayVersions())
     versions.addAll(getSonatypeVersions())
     return versions
 }
-def getBintrayMavenVersions() {
-    String baseUrl = 'https://dl.bintray.com/qameta/maven/io/qameta/allure/allure-commandline'
-    WebClient wc = new WebClient()
-    HtmlPage meta = wc.getPage(baseUrl)
+def getCentralVersions() {
+    String baseUrl = 'https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline'
+    URL metaUrl = new URL("$baseUrl/maven-metadata.xml")
 
-    List<String> versions = meta.getByXPath("//body/pre")
-            .collect() { DomElement e -> e.getTextContent().replace("/", "") }
-            .findAll() { e -> !e.contains(".xml") && !e.contains('BETA') }
+    WebClient wc = new WebClient()
+    XmlPage meta = wc.getPage(metaUrl)
+
+    List<String> versions = meta.getByXPath("//metadata/versioning/versions/version")
+            .collect() { DomElement e -> e.getTextContent() }
+            .findAll() { e -> !e.contains('BETA') }
             .reverse()
 
     return versions.collect() { version ->
@@ -31,7 +33,7 @@ def getBintrayMavenVersions() {
     }
 }
 
-def getBintrayGenericVersions() {
+def getBintrayVersions() {
     String baseUrl = 'https://dl.bintray.com/qameta/generic/io/qameta/allure/allure'
     WebClient wc = new WebClient()
     HtmlPage meta = wc.getPage(baseUrl)
