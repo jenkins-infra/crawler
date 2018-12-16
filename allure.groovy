@@ -8,9 +8,29 @@ import net.sf.json.JSONObject
 
 def getList() {
     List versions = new ArrayList()
+    versions.addAll(getJenkinsVersions())
     versions.addAll(getBintrayVersions())
     versions.addAll(getSonatypeVersions())
     return versions
+}
+def getJenkinsVersions() {
+    String baseUrl = 'https://repo.jenkins-ci.org/maven-repo1/io/qameta/allure/allure-commandline'
+    URL metaUrl = new URL("$baseUrl/maven-metadata.xml")
+
+    WebClient wc = new WebClient()
+    XmlPage meta = wc.getPage(metaUrl)
+
+    List<String> versions = meta.getByXPath("//metadata/versioning/versions/version")
+            .collect() { DomElement e -> e.getTextContent() }
+            .findAll() { e -> !e.contains('BETA') }
+            .reverse()
+
+    return versions.collect() { version ->
+        return ["id"  : version,
+                "name": version,
+                "url" : String.format('%s/%s/allure-commandline-%s.zip', baseUrl, version, version)
+        ]
+    }
 }
 
 def getBintrayVersions() {
@@ -26,7 +46,7 @@ def getBintrayVersions() {
     return versions.collect() { version ->
         return ["id"  : version,
                 "name": version,
-                "url" : getBintrayArtifactUrl(baseUrl, version)
+                "url" : String.format('%s/%s/allure-%s.zip', baseUrl, version, version)
         ]
     }
 }
@@ -49,10 +69,6 @@ def getSonatypeVersions() {
                 "url" : getSonatypeArtifactUrl(baseUrl, version)
         ]
     }
-}
-
-def getBintrayArtifactUrl(String baseUrl, String version) {
-    return String.format('%s/%s/allure-%s.zip', baseUrl, version, version)
 }
 
 def getSonatypeArtifactUrl(String baseUrl, String version) {
