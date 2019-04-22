@@ -8,6 +8,7 @@ List p = [buildDiscarder(logRotator(numToKeepStr: '5'))]
  */
 if (infra.isTrusted()) {
     p.add(pipelineTriggers([cron('H */4 * * *')]))
+    p.add(disableConcurrentBuilds())
 }
 
 properties(p)
