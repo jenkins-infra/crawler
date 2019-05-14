@@ -1,6 +1,7 @@
 #!./lib/runner.groovy
 // Generates server-side metadata for Oracle JDK
 import com.gargoylesoftware.htmlunit.WebClient
+import com.gargoylesoftware.htmlunit.BrowserVersion
 import net.sf.json.JSONObject
 import org.kohsuke.args4j.CmdLineException
 import java.security.GeneralSecurityException
@@ -14,7 +15,7 @@ public class ListJDK {
     private final WebClient wc;
 
     public ListJDK() {
-        wc = new WebClient();
+        wc = new WebClient(BrowserVersion.FIREFOX_3);
         wc.setCssEnabled(false);
         wc.setThrowExceptionOnScriptError(false);
         wc.setThrowExceptionOnFailingAjax(false);
@@ -28,17 +29,27 @@ public class ListJDK {
         return new JSONObject()
                 .element("version", 2)
                 .element("data", new JSONArray()
-//                        .element(family("JDK 10",
-//                            parse("http://www.oracle.com/technetwork/java/javase/downloads/jdk10-downloads-4416644.html")))
+                        .element(family("JDK 12", combine(
+                            parse("https://www.oracle.com/technetwork/java/javase/downloads/java-archive-javase12-5440181.html"),
+                            parse("https://www.oracle.com/technetwork/java/javase/downloads/jdk12-downloads-5295953.html"))))
+                        .element(family("JDK 11", combine(
+                            parse("https://www.oracle.com/technetwork/java/javase/downloads/java-archive-javase11-5116896.html"),
+                            parse("https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html"))))
+                        .element(family("JDK 10", combine(
+                            parse("https://www.oracle.com/technetwork/java/javase/downloads/java-archive-javase10-4425482.html"))))
                         .element(family("JDK 9", combine(
                             parse("http://www.oracle.com/technetwork/java/javase/downloads/java-archive-javase9-3934878.html"))))
                         .element(family("JDK 8", combine(
                             parse("http://www.oracle.com/technetwork/java/javase/downloads/java-archive-javase8-2177648.html"),
                             parse("http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html"))))
-                        .element(family("JDK 7", parse("http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html")))
-                        .element(family("JDK 6", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase6-419409.html")))
-                        .element(family("JDK 5", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase5-419410.html")))
-                        .element(family("JDK 1.4", parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase14-419411.html"))));
+                        .element(family("JDK 7", combine(
+                            parse("http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html"))))
+                        .element(family("JDK 6", combine(
+                            parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase6-419409.html"))))
+                        .element(family("JDK 5", combine(
+                            parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase5-419410.html"))))
+                        .element(family("JDK 1.4", combine(
+                            parse("http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase14-419411.html")))));
     }
 
     private static final Pattern NUMBER = Pattern.compile("\\d+");
