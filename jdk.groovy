@@ -1,6 +1,7 @@
 #!./lib/runner.groovy
 // Generates server-side metadata for Oracle JDK
 import com.gargoylesoftware.htmlunit.WebClient
+import com.gargoylesoftware.htmlunit.BrowserVersion
 import net.sf.json.JSONObject
 import org.kohsuke.args4j.CmdLineException
 import java.security.GeneralSecurityException
@@ -14,7 +15,7 @@ public class ListJDK {
     private final WebClient wc;
 
     public ListJDK() {
-        wc = new WebClient();
+        wc = new WebClient(BrowserVersion.FIREFOX_3);
         wc.setCssEnabled(false);
         wc.setThrowExceptionOnScriptError(false);
         wc.setThrowExceptionOnFailingAjax(false);
