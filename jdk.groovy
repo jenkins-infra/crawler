@@ -26,6 +26,10 @@ public class ListJDK {
     }
 
     private JSONObject build() throws IOException, CmdLineException, GeneralSecurityException {
+        // HACK HACK HACK INFRA-2345
+        // Temporary bandaid to give up scraping and use a snapshot
+        return JSONObject.fromObject(new File("jdk.hack.json").text)
+
         return new JSONObject()
                 .element("version", 2)
                 .element("data", new JSONArray()
