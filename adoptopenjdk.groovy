@@ -33,6 +33,9 @@ public class ListAdoptOpenJDK {
 
                     .element(family("OpenJDK 12 - HotSpot", parse("hotspot", "https://api.adoptopenjdk.net/v2/info/releases/openjdk12?openjdk_impl=hotspot")))
                     .element(family("OpenJDK 12 - OpenJ9", parse("openj9", "https://api.adoptopenjdk.net/v2/info/releases/openjdk12?openjdk_impl=openj9")))
+
+                    .element(family("OpenJDK 13 - HotSpot", parse("hotspot", "https://api.adoptopenjdk.net/v2/info/releases/openjdk13?openjdk_impl=hotspot")))
+                    .element(family("OpenJDK 13 - OpenJ9", parse("openj9", "https://api.adoptopenjdk.net/v2/info/releases/openjdk13?openjdk_impl=openj9")))
         );
     }
 
