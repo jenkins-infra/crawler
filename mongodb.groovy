@@ -16,9 +16,7 @@ def json = [];
     win32: ['i386', 'x86_64'],
     sunos5: ['i86pc', 'x86_64']
 ].each { osname, archs -> archs.each { arch ->
-    def url = "http://dl.mongodb.org/dl/$osname/$arch"
-    println(url)
-    HtmlPage p = wc.getPage(url)
+    HtmlPage p = wc.getPage("http://dl.mongodb.org/dl/$osname/$arch")
     p.getByXPath("//a[@href]").reverse().collect { HtmlAnchor e ->
         def m = e.getHrefAttribute() =~ /^.*mongodb-$osname-$arch-(.*?)\.(tgz|zip)$/
         if (m) {
