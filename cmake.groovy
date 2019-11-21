@@ -7,13 +7,21 @@ import com.gargoylesoftware.htmlunit.BrowserVersion
 
 def baseUrl = 'https://cmake.org/files/'
 
-def wc = new WebClient( new BrowserVersion( "", null, "JenkinsBackendCrawler", 1.0f))
-wc.setJavaScriptEnabled(false);
+def wc = new WebClient( 
+    new BrowserVersion.BrowserVersionBuilder(BrowserVersion.BEST_SUPPORTED)
+        .setApplicationName("JenkinsBackendCrawler")
+        .setApplicationVersion("1.0")
+        .build()
+)
+wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+wc.getOptions().setJavaScriptEnabled(false);
+wc.getOptions().setThrowExceptionOnScriptError(false);
+wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
 def releases = [:]
 
 // Gather a list of top dirs
 def dirs = []
-wc.getPage(baseUrl).selectNodes("//td/a").reverse().each { HtmlAnchor e ->
+wc.getPage(baseUrl).getByXPath("//td/a").reverse().each { HtmlAnchor e ->
     dirs << e.getHrefAttribute()
 }
 dirs.each { dir ->
@@ -24,7 +32,7 @@ dirs.each { dir ->
     // gather archive files
     def files= []
     // get version urls
-    wc.getPage(baseUrl+ dir).selectNodes("//td/a").reverse().each { HtmlAnchor e ->
+    wc.getPage(baseUrl+ dir).getByXPath("//td/a").reverse().each { HtmlAnchor e ->
         files << e.getHrefAttribute()
     }
 

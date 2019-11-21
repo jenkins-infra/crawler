@@ -15,10 +15,10 @@ public class ListJDK {
     private final WebClient wc;
 
     public ListJDK() {
-        wc = new WebClient(BrowserVersion.FIREFOX_3);
-        wc.setCssEnabled(false);
-        wc.setThrowExceptionOnScriptError(false);
-        wc.setThrowExceptionOnFailingAjax(false);
+        wc = new WebClient(BrowserVersion.BEST_SUPPORTED); // INTERNET_EXPLORER);
+        wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+        wc.getOptions().setThrowExceptionOnScriptError(false);
+        wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
     }
 
     public void main() throws Exception {
@@ -108,7 +108,12 @@ public class ListJDK {
     private JSONObject parse(String url) throws IOException {
         HtmlPage p = getPage(url);
 
-        return (JSONObject)toJSON(p.executeJavaScript("downloads").getJavaScriptResult());
+        Object results = p.executeJavaScript("downloads").getJavaScriptResult()
+        if (results == null) {
+            // no downloads/legacy method on page
+            return new JSONObject()
+        }
+        return (JSONObject)toJSON(results);
     }
 
     private JSONObject combine(JSONObject... args) {
@@ -133,11 +138,11 @@ public class ListJDK {
     }
 
     private HtmlPage getPage(String url) throws IOException {
-//        System.out.println("Fetching url} ...")
+        // System.out.println("Fetching ${url} ...")
         long start = System.currentTimeMillis();
         HtmlPage p = wc.getPage(url);
         long end = System.currentTimeMillis();
-//        println("done (took ${end - start} msec)")
+        // println("done (took ${end - start} msec)")
         return p;
     }
 }

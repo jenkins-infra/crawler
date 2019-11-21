@@ -7,7 +7,7 @@ import java.util.logging.*;
 @GrabExclude('nekohtml:nekohtml')
 @Grapes([
     @Grab("net.sourceforge.nekohtml:nekohtml:1.9.13"),
-    @Grab("org.jenkins-ci:htmlunit:2.6-jenkins-4"),
+    @Grab("net.sourceforge.htmlunit:htmlunit:2.36.0"),
     @Grab("org.jenkins-ci:update-center2:2.0")
 ])
 class init {

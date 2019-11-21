@@ -10,8 +10,10 @@ import hudson.util.VersionNumber
 def listFromOldCodehausURL() {
     def url = "https://repo1.maven.org/maven2/org/codehaus/sonar-plugins/sonar-runner/";
     def wc = new WebClient()
-    wc.javaScriptEnabled = false;
-    wc.cssEnabled = false;
+    wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+    wc.getOptions().setJavaScriptEnabled(false);
+    wc.getOptions().setThrowExceptionOnScriptError(false);
+    wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
     HtmlPage p = wc.getPage(url);
     def pattern=Pattern.compile("^([0-9][0-9\\.]+)/\$");
 
@@ -30,8 +32,10 @@ def listFromOldCodehausURL() {
 def listFromNewCodehausUrl() {
     def url = "https://repo1.maven.org/maven2/org/codehaus/sonar/runner/sonar-runner-dist/";
     def wc = new WebClient()
-    wc.javaScriptEnabled = false;
-    wc.cssEnabled = false;
+    wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+    wc.getOptions().setJavaScriptEnabled(false);
+    wc.getOptions().setThrowExceptionOnScriptError(false);
+    wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
     HtmlPage p = wc.getPage(url);
     def pattern = Pattern.compile("^([0-9][0-9\\.]+)/");
 
@@ -50,8 +54,10 @@ def listFromNewCodehausUrl() {
 def listFromNewSonarSourceUrl() {
     def url = "https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/";
     def wc = new WebClient()
-    wc.javaScriptEnabled = false;
-    wc.cssEnabled = false;
+    wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+    wc.getOptions().setJavaScriptEnabled(false);
+    wc.getOptions().setThrowExceptionOnScriptError(false);
+    wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
     HtmlPage p = wc.getPage(url);
     def pattern = Pattern.compile("^([0-9][0-9\\.]+)/");
 

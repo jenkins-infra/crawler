@@ -18,7 +18,7 @@ HtmlPage p = wc.getPage(baseUrl)
 def json = [];
 
 p
-  .selectNodes("//a[@href]")
+  .getByXPath("//a[@href]")
   .grep({
     it.getHrefAttribute() ==~ pathAndVersionRegex 
   })

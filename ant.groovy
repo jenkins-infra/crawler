@@ -9,8 +9,11 @@ import hudson.util.VersionNumber
 
 def listUp(url,pattern) {
     wc = new WebClient()
-    wc.javaScriptEnabled = false;
-    wc.cssEnabled = false;
+    wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+    wc.getOptions().setJavaScriptEnabled(false);
+    wc.getOptions().setThrowExceptionOnScriptError(false);
+    wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+    
     HtmlPage p = wc.getPage(url);
     pattern=Pattern.compile(pattern);
 
