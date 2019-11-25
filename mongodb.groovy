@@ -5,6 +5,11 @@ import net.sf.json.*
 import com.gargoylesoftware.htmlunit.WebClient
 
 def wc = new WebClient()
+wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+wc.getOptions().setJavaScriptEnabled(false);
+wc.getOptions().setThrowExceptionOnScriptError(false);
+wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+
 def json = [];
 [osx: ['i386', 'x86_64'],
     linux: ['i686', 'x86_64'],
@@ -12,7 +17,7 @@ def json = [];
     sunos5: ['i86pc', 'x86_64']
 ].each { osname, archs -> archs.each { arch ->
     HtmlPage p = wc.getPage("http://dl.mongodb.org/dl/$osname/$arch")
-    p.selectNodes("//a[@href]").reverse().collect { HtmlAnchor e ->
+    p.getByXPath("//a[@href]").reverse().collect { HtmlAnchor e ->
         def m = e.getHrefAttribute() =~ /^.*mongodb-$osname-$arch-(.*?)\.(tgz|zip)$/
         if (m) {
             String version = "${osname}-${arch}-${m[0][1]}"

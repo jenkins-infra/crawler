@@ -13,11 +13,14 @@ def urls = []
 
 // Disable JS, as we don't care about it
 WebClient webClient = new WebClient()
-webClient.setJavaScriptEnabled(false);
+webClient.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+webClient.getOptions().setJavaScriptEnabled(false);
+webClient.getOptions().setThrowExceptionOnScriptError(false);
+webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
 
 // Fetch the page and gather the links
 HtmlPage page = webClient.getPage(downloadsUrl)
-page.selectNodes("//td/a").each { HtmlAnchor e ->
+page.getByXPath("//td/a").each { HtmlAnchor e ->
 	urls << e.getHrefAttribute()
 }
 

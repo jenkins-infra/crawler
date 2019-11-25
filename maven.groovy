@@ -9,8 +9,10 @@ import hudson.util.VersionNumber
 
 def getHtmlPage(url) {
     def wc = new WebClient()
-    wc.javaScriptEnabled = false
-    wc.cssEnabled = false
+    wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+    wc.getOptions().setJavaScriptEnabled(false);
+    wc.getOptions().setThrowExceptionOnScriptError(false);
+    wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
     return wc.getPage(url)
 }
 
@@ -31,8 +33,10 @@ def listFromURL(url) {
 
 def listFromUrl(url, pattern) {
     wc = new WebClient();
-    wc.javaScriptEnabled = false;
-    wc.cssEnabled = false;
+    wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+    wc.getOptions().setJavaScriptEnabled(false);
+    wc.getOptions().setThrowExceptionOnScriptError(false);
+    wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
 
     HtmlPage p = wc.getPage(url);
     initialurl = url;
