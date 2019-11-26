@@ -6,14 +6,16 @@ import com.gargoylesoftware.htmlunit.WebClient
 import net.sf.json.*
 
 def wc = new WebClient()
-wc.setThrowExceptionOnScriptError(false)
+wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+wc.getOptions().setThrowExceptionOnScriptError(false);
+wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
 
 def baseUrl = 'https://services.gradle.org'
 HtmlPage p = wc.getPage(baseUrl + '/distributions');
 
 def json = [];
 
-p.selectNodes("//a[@href]").collect { HtmlAnchor e ->
+p.getByXPath("//a[@href]").collect { HtmlAnchor e ->
     def url = baseUrl + e.getHrefAttribute()
     println url
     def m = (url =~ /gradle-(.*)-bin.zip$/)

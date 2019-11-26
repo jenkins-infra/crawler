@@ -7,8 +7,8 @@ def baseUrl = 'https://releases.hashicorp.com'
 def json = []
 def wc = new WebClient()
 HtmlPage p = wc.getPage("${baseUrl}/terraform/")
-p.selectNodes("//a[@href]").grep { it.hrefAttribute =~ /\/terraform\/.*/ }.each {
-    wc.getPage("${baseUrl}${it.hrefAttribute}").selectNodes("//a[@href]").each {
+p.getByXPath("//a[@href]").grep { it.hrefAttribute =~ /\/terraform\/.*/ }.each {
+    wc.getPage("${baseUrl}${it.hrefAttribute}").getByXPath("//a[@href]").each {
         def m = (it.textContent =~ /terraform.*(\d+.\d+.\d+)_(.*)_(.*).zip/)
         if (m) {
             def verId = "${m[0][1]}-${m[0][2]}-${m[0][3]}".toString()

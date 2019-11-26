@@ -11,7 +11,7 @@ HtmlPage p = wc.getPage(baseUrl);
 
 def json = [];
 
-p.selectNodes("//a[@href]").reverse().collect { HtmlAnchor e ->
+p.getByXPath("//a[@href]").reverse().collect { HtmlAnchor e ->
     def url = baseUrl + "/" + e.getHrefAttribute()
     println url
     String versionRegex = "v(\\d+(?:\\.\\d+)*)/";

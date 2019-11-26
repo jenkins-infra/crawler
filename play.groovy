@@ -6,14 +6,18 @@ import net.sf.json.*
 import com.gargoylesoftware.htmlunit.WebClient
 
 def wc = new WebClient()
-def baseUrl = 'http://download.playframework.org/releases/'
+wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+wc.getOptions().setJavaScriptEnabled(false);
+wc.getOptions().setThrowExceptionOnScriptError(false);
+wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+
+def baseUrl = 'https://www.playframework.com/releases'
 HtmlPage p = wc.getPage(baseUrl);
 
 def json = [];
 
-p.selectNodes("//a[@href]").reverse().collect { HtmlAnchor e ->
-    def url = baseUrl + e.getHrefAttribute()
-    println url
+p.getByXPath("//a[@href]").reverse().collect { HtmlAnchor e ->
+    def url = e.getHrefAttribute()
     def m = (url =~ /play-(.*).zip$/)
     if (m) {
         json << ["id":m[0][1], "name": "Play ${m[0][1]}".toString(), "url":url];

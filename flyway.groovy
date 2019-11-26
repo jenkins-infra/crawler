@@ -9,8 +9,9 @@ import java.util.regex.Pattern
 // Generates server-side metadata for Flyway command-line
 def webclient (){
   def wc = new WebClient()
-  wc.javaScriptEnabled = false;
-  wc.cssEnabled = false;
+  wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+  wc.getOptions().setThrowExceptionOnScriptError(false);
+  wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
   return wc
 }
 
