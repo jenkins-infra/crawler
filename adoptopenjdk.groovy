@@ -7,6 +7,9 @@ import net.sf.json.JSONObject
 public class ListAdoptOpenJDK {
     private final WebClient wc;
 
+    private final String API_CONFIG = "https://adoptopenjdk.net/dist/json/config.json";
+    private final String API_URL = "https://api.adoptopenjdk.net/v2";
+
     public ListAdoptOpenJDK() {
         wc = new WebClient();
     }
@@ -16,38 +19,33 @@ public class ListAdoptOpenJDK {
     }
 
     private JSONObject build() throws IOException {
+        UnexpectedPage p = wc.getPage(API_CONFIG);
+        JSONObject data = JSONObject.fromObject(p.getWebResponse().getContentAsString());
+        JSONArray variants = data.getJSONArray("variants");
+        JSONArray result = new JSONArray();
+        for (int i=0; i<variants.size(); i++) {
+            JSONObject v = variants.getJSONObject(i);
+            String familyName = v.getString("label") + " - " + v.getString("jvm");
+            def searchableName = v.getString("searchableName").split("-");
+            String jvm = searchableName[0];
+            String openjdk_impl = searchableName[1];
+            result.add(family(familyName, parse(jvm, openjdk_impl)));
+        }
+
         return new JSONObject()
                 .element("version", 2)
-                .element("data", new JSONArray()
-                    .element(family("OpenJDK 8 - HotSpot", parse("hotspot", "https://api.adoptopenjdk.net/v2/info/releases/openjdk8?openjdk_impl=hotspot")))
-                    .element(family("OpenJDK 8 - OpenJ9", parse("openj9", "https://api.adoptopenjdk.net/v2/info/releases/openjdk8?openjdk_impl=openj9")))
-
-                    .element(family("OpenJDK 9 - HotSpot", parse("hotspot", "https://api.adoptopenjdk.net/v2/info/releases/openjdk9?openjdk_impl=hotspot")))
-                    .element(family("OpenJDK 9 - OpenJ9", parse("openj9", "https://api.adoptopenjdk.net/v2/info/releases/openjdk9?openjdk_impl=openj9")))
-
-                    .element(family("OpenJDK 10 - HotSpot", parse("hotspot", "https://api.adoptopenjdk.net/v2/info/releases/openjdk10?openjdk_impl=hotspot")))
-                    .element(family("OpenJDK 10 - OpenJ9", parse("openj9", "https://api.adoptopenjdk.net/v2/info/releases/openjdk10?openjdk_impl=openj9")))
-
-                    .element(family("OpenJDK 11 - HotSpot", parse("hotspot", "https://api.adoptopenjdk.net/v2/info/releases/openjdk11?openjdk_impl=hotspot")))
-                    .element(family("OpenJDK 11 - OpenJ9", parse("openj9", "https://api.adoptopenjdk.net/v2/info/releases/openjdk11?openjdk_impl=openj9")))
-
-                    .element(family("OpenJDK 12 - HotSpot", parse("hotspot", "https://api.adoptopenjdk.net/v2/info/releases/openjdk12?openjdk_impl=hotspot")))
-                    .element(family("OpenJDK 12 - OpenJ9", parse("openj9", "https://api.adoptopenjdk.net/v2/info/releases/openjdk12?openjdk_impl=openj9")))
-
-                    .element(family("OpenJDK 13 - HotSpot", parse("hotspot", "https://api.adoptopenjdk.net/v2/info/releases/openjdk13?openjdk_impl=hotspot")))
-                    .element(family("OpenJDK 13 - OpenJ9", parse("openj9", "https://api.adoptopenjdk.net/v2/info/releases/openjdk13?openjdk_impl=openj9")))
-        );
+                .element("data", result);
     }
 
-    private JSONObject family(String name, JSONArray data) {
+    private static JSONObject family(String name, JSONArray data) {
         JSONObject o = new JSONObject();
         o.put("name", name);
         o.put("releases", data);
         return o;
     }
 
-    private JSONArray parse(String openjdk_impl, String url) throws IOException {
-        UnexpectedPage p = wc.getPage(url);
+    private JSONArray parse(String jvm, String openjdk_impl) throws IOException {
+        UnexpectedPage p = wc.getPage(API_URL + "/info/releases/" + jvm + "?openjdk_impl=" + openjdk_impl);
         JSONArray data = JSONArray.fromObject(p.getWebResponse().getContentAsString());
         JSONArray result = new JSONArray();
         for (int i=0; i<data.size(); i++) {
