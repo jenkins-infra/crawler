@@ -69,7 +69,7 @@ private String getSdkInfo(JSONObject s) {
     final StringBuilder info = new StringBuilder()
     def value = s.get('vs-support')
     if (value instanceof String && !value.isEmpty())
-        info.append(info)
+        info.append(value)
     else {
         value = s.get('vs-version')
         if (value instanceof String && !value.isEmpty())
