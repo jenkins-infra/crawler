@@ -193,13 +193,13 @@ private def getSdk(sdks, JSONObject s) {
             arch = (arch != null) ? ' - ' + arch : ''
             pkg['platform'] = os + version + arch
         }
-        // FIXME: Maybe store the hash too? The installer could potentially verify it after the download.
+        pkg['hash'] = p.getString('hash')
         final String url = p.getString('url')
         pkg['url'] = url
         urls += url
         packages += pkg
     }
-    if (urls.size() > 0) {
+    if (urls.size() > 0) { // compute the URL prefix for the package (reduces file size)
         String urlPrefix = StringUtils.getCommonPrefix(urls as String[])
         if (!urlPrefix.endsWith('/'))
             urlPrefix = urlPrefix.substring(0, urlPrefix.lastIndexOf('/') + 1)
@@ -234,8 +234,9 @@ private void createSdkDownloads() {
             // Assumption based on Semantic Versioning
             if (r.getString('release-version').contains('-'))
                 release['preview'] = true
-            // FIXME: Should we include the release notes too? Might be nice to be able to show a link to those in
-            // FIXME: the tool installer UX.
+            def releaseNotes = r.get('release-notes')
+            if (releaseNotes instanceof String)
+                release['releaseNotes'] = releaseNotes
             release['sdks'] = []
             // Older releases have only 'sdk'. Some have sdks: null. But when sdks is set, it always includes sdk.
             def releaseSdks = r.get('sdks')
