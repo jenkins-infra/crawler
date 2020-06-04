@@ -193,7 +193,8 @@ private def getSdk(sdks, JSONObject s) {
             arch = (arch != null) ? ' - ' + arch : ''
             pkg['platform'] = os + version + arch
         }
-        pkg['hash'] = p.getString('hash')
+        // Not currently used or needed, and it makes the file much bigger
+        //pkg['hash'] = p.getString('hash')
         final String url = p.getString('url')
         pkg['url'] = url
         urls += url
