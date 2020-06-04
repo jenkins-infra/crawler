@@ -263,7 +263,7 @@ private void createSdkDownloads() {
         version['releases'] = releases
         versions += version
     }
-    createDownloadable('Download', JSONObject.fromObject([ 'versions' : versions, 'sdks': sdks.values()]))
+    createDownloadable('Downloads', JSONObject.fromObject([ 'versions' : versions, 'sdks': sdks.values()]))
 }
 
 createSdkDownloads()
