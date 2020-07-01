@@ -6,7 +6,7 @@ import com.gargoylesoftware.htmlunit.WebClient
 import net.sf.json.*
 
 // Fetch the list of downloads from the Go website
-def downloadsUrl = "http://golang.org/dl/"
+def downloadsUrl = "https://golang.org/dl/"
 
 // Gather a list of URLs
 def urls = []
@@ -43,7 +43,7 @@ urls.each { url ->
 
     // Gather the info for this archive
     def variant = [:]
-    variant.url = url
+    variant.url = "https://golang.org" + url
     variant.os = parts[0][2]
     variant.arch = parts[0][3]
     if (parts[0][4] && parts[0][4].startsWith("osx")) {
