@@ -8,7 +8,7 @@ import net.sf.json.JSONObject
 
 def getList() {
     List versions = new ArrayList()
-    versions.addAll(getJenkinsVersions())
+    // Disabled for INFRA-2772: versions.addAll(getJenkinsVersions())
     versions.addAll(getBintrayVersions())
     versions.addAll(getSonatypeVersions())
     return versions
