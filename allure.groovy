@@ -8,13 +8,13 @@ import net.sf.json.JSONObject
 
 def getList() {
     List versions = new ArrayList()
-    versions.addAll(getJenkinsVersions())
+    versions.addAll(getCentralVersions())
     versions.addAll(getBintrayVersions())
     versions.addAll(getSonatypeVersions())
     return versions
 }
-def getJenkinsVersions() {
-    String baseUrl = 'https://repo.jenkins-ci.org/maven-repo1/io/qameta/allure/allure-commandline'
+def getCentralVersions() {
+    String baseUrl = 'https://repo1.maven.org/maven2/io/qameta/allure/allure-commandline'
     URL metaUrl = new URL("$baseUrl/maven-metadata.xml")
 
     WebClient wc = new WebClient()
