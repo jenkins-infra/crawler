@@ -1,73 +1,80 @@
 #!./lib/runner.groovy
-import com.gargoylesoftware.htmlunit.UnexpectedPage
+import com.gargoylesoftware.htmlunit.Page
 import com.gargoylesoftware.htmlunit.WebClient
+import com.gargoylesoftware.htmlunit.WebResponse
 import net.sf.json.JSONArray
 import net.sf.json.JSONObject
 
-public class ListAdoptOpenJDK {
+class ListAdoptOpenJDK {
     private final WebClient wc;
 
-    private final String API_CONFIG = "https://adoptopenjdk.net/dist/json/config.json";
-    private final String API_URL = "https://api.adoptopenjdk.net/v2";
+    private final String API_URL = "https://api.adoptopenjdk.net/v3";
 
-    public ListAdoptOpenJDK() {
+    ListAdoptOpenJDK() {
         wc = new WebClient();
+        wc.addRequestHeader("accept", "application/json")
+        wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
     }
 
-    public void main() throws Exception {
+    void main() throws Exception {
         lib.DataWriter.write("io.jenkins.plugins.adoptopenjdk.AdoptOpenJDKInstaller", build());
     }
 
     private JSONObject build() throws IOException {
-        UnexpectedPage p = wc.getPage(API_CONFIG);
-        JSONObject data = JSONObject.fromObject(p.getWebResponse().getContentAsString());
-        JSONArray variants = data.getJSONArray("variants");
-        JSONArray result = new JSONArray();
-        for (int i=0; i<variants.size(); i++) {
-            JSONObject v = variants.getJSONObject(i);
-            String familyName = v.getString("label") + " - " + v.getString("jvm");
-            def searchableName = v.getString("searchableName").split("-");
-            String jvm = searchableName[0];
-            String openjdk_impl = searchableName[1];
-            result.add(family(familyName, parse(jvm, openjdk_impl)));
+        Page p = wc.getPage(API_URL + "/info/available_releases")
+        WebResponse response = p.getWebResponse();
+
+        if (response.statusCode != 200) {
+            throw new Exception("Could not load available_releases")
         }
+
+        JSONArray result = new JSONArray()
+        JSONObject data = JSONObject.fromObject(response.getContentAsString())
+
+        result.addAll(getReleases(data.available_releases as JSONArray, "HotSpot"))
+        result.addAll(getReleases(data.available_releases as JSONArray, "OpenJ9"))
 
         return new JSONObject()
                 .element("version", 2)
                 .element("data", result);
     }
 
-    private static JSONObject family(String name, JSONArray data) {
-        JSONObject o = new JSONObject();
-        o.put("name", name);
-        o.put("releases", data);
-        return o;
-    }
-
-    private JSONArray parse(String jvm, String openjdk_impl) throws IOException {
-        UnexpectedPage p = wc.getPage(API_URL + "/info/releases/" + jvm + "?openjdk_impl=" + openjdk_impl);
-        JSONArray data = JSONArray.fromObject(p.getWebResponse().getContentAsString());
-        JSONArray result = new JSONArray();
-        for (int i=0; i<data.size(); i++) {
-            JSONObject r = new JSONObject();
-
-            JSONObject release = data.getJSONObject(i);
-            r.put("release_name", release.getString("release_name"));
-            r.put("openjdk_impl", openjdk_impl);
-
-            JSONArray binaries = release.getJSONArray("binaries");
-            JSONArray b = new JSONArray();
-            for (int j=0; j<binaries.size(); j++) {
-                JSONObject binary = binaries.getJSONObject(j);
-                if ("jdk".equals(binary.getString("binary_type"))) {
-                    b.add(binary);
+    private JSONArray getReleases(JSONArray available_releases, String jvm_impl) {
+        JSONArray result = new JSONArray()
+        String openjdk_impl = jvm_impl.toLowerCase()
+        available_releases.each { feature_version ->
+            JSONObject r = new JSONObject()
+            r.put("name", "OpenJDK " + feature_version + " - " + jvm_impl)
+            JSONArray releases = new JSONArray()
+            int page = 0
+            boolean keepGoing = true
+            while (keepGoing) {
+                Page a = wc.getPage(API_URL + "/assets/feature_releases/" + feature_version + "/ga?vendor=adoptopenjdk&project=jdk&image_type=jdk&sort_method=DEFAULT&sort_order=DESC&page_size=20&page=" + (page++) + "&jvm_impl=" + openjdk_impl)
+                WebResponse ar = a.getWebResponse()
+                if (ar.getStatusCode() == 200) {
+                    JSONArray assets = JSONArray.fromObject(ar.getContentAsString())
+                    releases.add(assets.collect {
+                        [
+                                release_name: it.release_name,
+                                openjdk_impl: openjdk_impl,
+                                binaries    : it.binaries.collect {
+                                    [
+                                            architecture: it.architecture,
+                                            os          : it.os,
+                                            openjdk_impl: it.jvm_impl,
+                                            binary_link : it.package.link
+                                    ]
+                                }
+                        ]
+                    })
+                } else {
+                    keepGoing = false
                 }
             }
-            r.put("binaries", b);
-
-            result.add(r);
+            r.put("releases", releases)
+            result.add(r)
         }
-        return result;
+        return result
     }
 }
 
