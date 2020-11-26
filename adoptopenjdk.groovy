@@ -53,7 +53,7 @@ class ListAdoptOpenJDK {
                 WebResponse ar = a.getWebResponse()
                 if (ar.getStatusCode() == 200) {
                     JSONArray assets = JSONArray.fromObject(ar.getContentAsString())
-                    releases.add(assets.collect {
+                    releases.addAll(assets.collect {
                         [
                                 release_name: it.release_name,
                                 openjdk_impl: openjdk_impl,
