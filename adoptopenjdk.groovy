@@ -14,6 +14,7 @@ class ListAdoptOpenJDK {
         wc = new WebClient();
         wc.addRequestHeader("accept", "application/json")
         wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        wc.getOptions().setPrintContentOnFailingStatusCode(false);
     }
 
     void main() throws Exception {
