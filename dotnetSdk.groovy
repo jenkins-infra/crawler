@@ -34,6 +34,15 @@ static JSONObject fetchJson(String url) {
 
 //endregion
 
+Throwable failure = null
+
+private Throwable addFailure(Throwable failure, Throwable t) {
+    if (failure == null)
+        failure = new IOException("Failed to create one or more output files.")
+    failure.addSuppressed(t)
+    return failure
+}
+
 //region File 1: Framework Monikers
 
 private void createFrameworkMonikers() {
@@ -44,14 +53,19 @@ private void createFrameworkMonikers() {
     createDownloadable('Framework', tfmList)
 }
 
-createFrameworkMonikers()
+try {
+    createFrameworkMonikers()
+}
+catch (Throwable t) {
+    failure = addFailure(failure, t)
+}
 
 //endregion
 
 //region File 2: RID Catalog
 
 private void createRidCatalog() {
-    final JSONObject ridCatalog = fetchJson('https://raw.githubusercontent.com/dotnet/runtime/master/src/libraries/pkg/Microsoft.NETCore.Platforms/runtime.json')
+    final JSONObject ridCatalog = fetchJson('https://raw.githubusercontent.com/dotnet/runtime/master/src/libraries/Microsoft.NETCore.Platforms/pkg/runtime.json')
     final String[] rids = ridCatalog.getJSONObject('runtimes').keySet().toArray()
     // TODO: Maybe sort this list so that names with fewer parts sort before those with more.
     // TODO: Specifically, sort 'tizen-4.0.0' and 'tizen-5.0.0' before 'tizen-4.0.0-x64' and 'tizen-5.0.0-x64'
@@ -59,7 +73,12 @@ private void createRidCatalog() {
     createDownloadable('Runtime', data)
 }
 
-createRidCatalog()
+try {
+    createRidCatalog()
+}
+catch (Throwable t) {
+    failure = addFailure(failure, t)
+}
 
 //endregion
 
@@ -266,6 +285,14 @@ private void createSdkDownloads() {
     createDownloadable('Downloads', JSONObject.fromObject([ 'versions' : versions, 'sdks': sdks.values()]))
 }
 
-createSdkDownloads()
+try {
+    createSdkDownloads()
+}
+catch (Throwable t) {
+    failure = addFailure(failure, t)
+}
 
 //endregion
+
+if (failure != null)
+    throw failure
