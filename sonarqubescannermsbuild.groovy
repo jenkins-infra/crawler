@@ -29,6 +29,10 @@ for (JSONObject release : releases) {
       json << ["id": "${tagName}-netcore".toString(),
              "name": "SonarScanner for MSBuild ${tagName} - .NET Core 2.0".toString(),
              "url": "https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/${tagName}/sonar-scanner-msbuild-${tagName}-netcoreapp2.0.zip".toString()];
+
+      json << ["id": "${tagName}-netcore3".toString(),
+             "name": "SonarScanner for MSBuild ${tagName} - .NET Core 3.0".toString(),
+             "url": "https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/${tagName}/sonar-scanner-msbuild-${tagName}-netcoreapp3.0.zip".toString()];
     }
   }
 }
