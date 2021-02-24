@@ -25,6 +25,10 @@ for (JSONObject release : releases) {
       json << ["id": tagName,
              "name": "SonarScanner for MSBuild ${tagName} - .NET Fwk 4.6".toString(),
              "url": "https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/${tagName}/sonar-scanner-msbuild-${tagName}-net46.zip".toString()];
+      
+      json << ["id": tagName,
+             "name": "SonarScanner for MSBuild ${tagName} - .NET Fwk 5.0".toString(),
+             "url": "https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/${tagName}/sonar-scanner-msbuild-${tagName}-net5.0.zip".toString()];
 
       json << ["id": "${tagName}-netcore".toString(),
              "name": "SonarScanner for MSBuild ${tagName} - .NET Core 2.0".toString(),
