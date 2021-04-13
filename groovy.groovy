@@ -6,7 +6,7 @@ import net.sf.json.*
 import com.gargoylesoftware.htmlunit.WebClient
 
 def wc = new WebClient()
-def baseUrl = 'https://dl.bintray.com/groovy/maven/'
+def baseUrl = 'https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/'
 HtmlPage p = wc.getPage(baseUrl);
 
 def json = [];
