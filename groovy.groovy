@@ -12,7 +12,7 @@ HtmlPage p = wc.getPage(baseUrl);
 def json = [];
 
 p.getByXPath("//a[@href]").reverse().collect { HtmlAnchor e ->
-    def url = baseUrl + e.getHrefAttribute()[1..-1]
+    def url = baseUrl + e.getHrefAttribute()
     println url
     def m = (url =~ /groovy-binary-(\d.\d.\d).zip$/)
     if (m) {
