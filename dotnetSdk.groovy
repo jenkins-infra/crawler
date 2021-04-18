@@ -37,8 +37,9 @@ static JSONObject fetchJson(String url) {
 Throwable failure = null
 
 private Throwable addFailure(Throwable failure, Throwable t) {
-    if (failure == null)
+    if (failure == null) {
         failure = new IOException("Failed to create one or more output files.")
+    }
     failure.addSuppressed(t)
     return failure
 }
@@ -65,7 +66,7 @@ catch (Throwable t) {
 //region File 2: RID Catalog
 
 private void createRidCatalog() {
-    final JSONObject ridCatalog = fetchJson('https://raw.githubusercontent.com/dotnet/runtime/master/src/libraries/Microsoft.NETCore.Platforms/pkg/runtime.json')
+    final JSONObject ridCatalog = fetchJson('https://raw.githubusercontent.com/dotnet/runtime/master/src/libraries/Microsoft.NETCore.Platforms/src/runtime.json')
     final String[] rids = ridCatalog.getJSONObject('runtimes').keySet().toArray()
     // TODO: Maybe sort this list so that names with fewer parts sort before those with more.
     // TODO: Specifically, sort 'tizen-4.0.0' and 'tizen-5.0.0' before 'tizen-4.0.0-x64' and 'tizen-5.0.0-x64'
@@ -87,123 +88,142 @@ catch (Throwable t) {
 private String getSdkInfo(JSONObject s) {
     final StringBuilder info = new StringBuilder()
     def value = s.get('vs-support')
-    if (value instanceof String && !value.isEmpty())
+    if (value instanceof String && !value.isEmpty()) {
         info.append(value)
+    }
     else {
         value = s.get('vs-version')
-        if (value instanceof String && !value.isEmpty())
+        if (value instanceof String && !value.isEmpty()) {
             info.append('Visual Studio ').append(value)
+        }
     }
     value = s.get('csharp-version')
     if (value instanceof String && !value.isEmpty()) {
-        if (info.size() > 0)
+        if (info.size() > 0) {
             info.append(', ')
+        }
         info.append('C# ').append(value)
     }
     value = s.get('fsharp-version')
     if (value instanceof String && !value.isEmpty()) {
-        if (info.size() > 0)
+        if (info.size() > 0) {
             info.append(', ')
+        }
         info.append('F# ').append(value)
     }
     value = s.get('vb-version')
     if (value instanceof String && !value.isEmpty()) {
-        if (info.size() > 0)
+        if (info.size() > 0) {
             info.append(', ')
+        }
         info.append('VB ').append(value)
     }
-    if (info.size() == 0)
+    if (info.size() == 0) {
         return null
+    }
     return info.toString()
 }
 
 private def getSdk(sdks, JSONObject s) {
     def name = s.get('version-display')
-    if (name instanceof JSONObject && name.isNullObject())
+    if (name instanceof JSONObject && name.isNullObject()) {
         name = null
+    }
     if (name == null) { // some SDKs have version-display as null; fall back on the raw version
         name = s.get('version')
-        if (name instanceof JSONObject && name.isNullObject())
+        if (name instanceof JSONObject && name.isNullObject()) {
             name = null
+        }
     }
-    if (name == null || !(name instanceof String))
+    if (name == null || !(name instanceof String)) {
         throw new JSONException('SDK has neither a version-display nor a version property set.')
+    }
     def sdk = [:]
     sdk['name'] = name
-    if (sdks.containsKey(name))
+    if (sdks.containsKey(name)) {
         return sdk // Assumption: SDK of same name has same contents
+    }
     def info = getSdkInfo(s)
-    if (info != null)
+    if (info != null) {
         sdk['info'] = info
+    }
     def packages = []
     def urls = []
+    def rids = [:]
     for (JSONObject p : s.getJSONArray('files')) {
         final String fileName = p.getString('name')
-        if (fileName == null || (!fileName.endsWith('.zip') && !fileName.endsWith('.tar.gz')))
+        if (fileName == null || (!fileName.endsWith('.zip') && !fileName.endsWith('.tar.gz'))) {
             continue
+        }
         def pkg = [:]
         final String rid = p.getString('rid')
+        if (rids.containsKey(rid)) {
+            // Avoid listing two files for the same rid; prefer the .tar.gz because it's slightly smaller.
+            if (fileName.endsWith('.tar.gz')) {
+                packages.remove(rids[rid])
+            }
+            else {
+                continue
+            }
+        }
         pkg['rid'] = rid
+        rids[rid] = pkg
         if (rid != null) {
-            String[] parts = rid.split(/[-]/, 2)
-            String osAndVersion = parts[0]
-            String arch = parts.length > 1 ? parts[1] : null
-            parts = osAndVersion.split(/[.]/)
+            String osAndVersion = rid
+            String arch
+            if (rid.endsWith('-arm')) {
+                arch = 'ARM32'
+                osAndVersion = rid.substring(0, rid.length() - 4)
+            }
+            else if (rid.endsWith('-arm64')) {
+                arch = 'ARM64'
+                osAndVersion = rid.substring(0, rid.length() - 6)
+            }
+            else if (rid.endsWith('-x64')) {
+                arch = 'x64'
+                osAndVersion = rid.substring(0, rid.length() - 4)
+            }
+            else if (rid.endsWith('-x86')) {
+                arch = 'x86'
+                osAndVersion = rid.substring(0, rid.length() - 4)
+            }
+            else {
+                arch = "???"
+            }
+            final String[] parts = osAndVersion.split(/[.]/)
             String os = parts[0]
             String version = parts.length > 1 ? parts[1] : null
-            if (arch != null) {
-                switch (arch) {
-                    case 'x86':
-                    case 'x64':
-                        // ok, fine as-is
-                        break;
-                    case 'musl-x64':
-                        // move the musl to os, so we can map that to Alpine Linux
-                        os += '-musl'
-                        arch = 'x64'
-                        break;
-                    case 'arm':
-                        arch = 'ARM32'
-                        break;
-                    case 'arm64':
-                        arch = 'ARM64'
-                        break;
-                    default:
-                        //System.err.printf('NO MAPPING DEFINED FOR ARCH PART (%s) OF RID "%s"%n', arch, rid)
-                        arch = '???'
-                }
-            }
             switch (os) {
                 case 'centos':
                     os = 'CentOS'
-                    break;
+                    break
                 case 'debian':
                     os = 'Debian'
-                    break;
+                    break
                 case 'fedora':
                     os = 'Fedora'
-                    break;
+                    break
                 case 'linux':
                     os = 'Linux'
-                    break;
+                    break
                 case 'linux-musl':
                     os = 'Alpine Linux'
-                    break;
+                    break
                 case 'opensuse':
                     os = 'OpenSUSE'
-                    break;
+                    break
                 case 'osx':
                     os = 'macOS'
-                    break;
+                    break
                 case 'rhel':
                     os = 'RHEL'
-                    break;
+                    break
                 case 'ubuntu':
                     os = 'Ubuntu'
-                    break;
+                    break
                 case 'win':
                     os = 'Windows'
-                    break;
+                    break
                 default:
                     //System.err.printf('NO MAPPING DEFINED FOR OS PART (%s) OF RID "%s"%n', os, rid)
                     os = '???'
@@ -213,19 +233,23 @@ private def getSdk(sdks, JSONObject s) {
             pkg['platform'] = os + version + arch
         }
         // Not currently used or needed, and it makes the file much bigger
-        //pkg['hash'] = p.getString('hash')
+        // pkg['hash'] = p.getString('hash')
+        // Later SDKs also include an 'akams' key, with a (shorter) aka.ms link.
+        // However, those links seem to be broken, so stick to 'url'.
         final String url = p.getString('url')
         pkg['url'] = url
-        urls += url
-        packages += pkg
+        urls << url
+        packages << pkg
     }
     if (urls.size() > 0) { // compute the URL prefix for the package (reduces file size)
         String urlPrefix = StringUtils.getCommonPrefix(urls as String[])
-        if (!urlPrefix.endsWith('/'))
+        if (!urlPrefix.endsWith('/')) {
             urlPrefix = urlPrefix.substring(0, urlPrefix.lastIndexOf('/') + 1)
+        }
         if (urlPrefix.size() > 15) { // shorter is not worth emitting the property for
-            for (def pkg : packages)
+            for (def pkg : packages) {
                 pkg['url'] = pkg['url'].substring(urlPrefix.size())
+            }
             sdk['urlPrefix'] = urlPrefix
         }
     }
@@ -235,7 +259,7 @@ private def getSdk(sdks, JSONObject s) {
 }
 
 private void createSdkDownloads() {
-    def versions = [];
+    def versions = []
     def sdks = [:]
     JSONObject releaseIndex = fetchJson('https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json')
     for (JSONObject v : releaseIndex.getJSONArray('releases-index')) {
@@ -249,38 +273,43 @@ private void createSdkDownloads() {
             def release = [:]
             release['name'] = r.getString('release-version')
             release['released'] = r.getString('release-date')
-            if (r.getBoolean('security'))
+            if (r.getBoolean('security')) {
                 release['securityFixes'] = true
+            }
             // Assumption based on Semantic Versioning
-            if (r.getString('release-version').contains('-'))
+            if (r.getString('release-version').contains('-')) {
                 release['preview'] = true
+            }
             def releaseNotes = r.get('release-notes')
-            if (releaseNotes instanceof String)
+            if (releaseNotes instanceof String) {
                 release['releaseNotes'] = releaseNotes
+            }
             release['sdks'] = []
             // Older releases have only 'sdk'. Some have sdks: null. But when sdks is set, it always includes sdk.
             def releaseSdks = r.get('sdks')
-            if (releaseSdks instanceof JSONObject && releaseSdks.isNullObject())
+            if (releaseSdks instanceof JSONObject && releaseSdks.isNullObject()) {
                 releaseSdks = null
+            }
             if (releaseSdks == null) {
                 def s = r.get('sdk')
-                if (s instanceof JSONObject && s.isNullObject())
+                if (s instanceof JSONObject && s.isNullObject()) {
                     s = null
+                }
                 if (s != null) {
                     def sdk = getSdk(sdks, s)
-                    release['sdks'] += sdk['name']
+                    release['sdks'] << sdk['name']
                 }
             }
             else {
                 for (JSONObject s : releaseSdks) {
                     def sdk = getSdk(sdks, s)
-                    release['sdks'] += sdk['name']
+                    release['sdks'] << sdk['name']
                 }
             }
-            releases += release
+            releases << release
         }
         version['releases'] = releases
-        versions += version
+        versions << version
     }
     createDownloadable('Downloads', JSONObject.fromObject([ 'versions' : versions, 'sdks': sdks.values()]))
 }
@@ -294,5 +323,6 @@ catch (Throwable t) {
 
 //endregion
 
-if (failure != null)
+if (failure != null) {
     throw failure
+}
