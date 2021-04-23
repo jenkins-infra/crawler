@@ -40,6 +40,8 @@ def listFromUrl(url, pattern) {
 
     HtmlPage p = wc.getPage(url);
     initialurl = url;
+    // Ignore message digest files
+    ignorePattern = Pattern.compile("\\.sha([0-9]+)\$");
     versionpattern = Pattern.compile("[0-9]([0-9.]+)");
     pattern=Pattern.compile(pattern);
 
@@ -49,6 +51,11 @@ def listFromUrl(url, pattern) {
             l=a.hrefAttribute.length()-2;
             ver=a.hrefAttribute.getAt(0..l);
             url = p.getFullyQualifiedUrl(a.hrefAttribute);
+            // Skip files matching the ignore pattern
+            ignoreMatcher = ignorePattern.matcher(url.toString());
+            if(ignoreMatcher.find()) {
+                return null;
+            }
             HtmlPage pb = wc.getPage(url);
             return pb.getAnchors().collect { HtmlAnchor a1 ->
               n = pattern.matcher(a1.hrefAttribute)
