@@ -21,7 +21,7 @@ def listFromGithub() {
 
     releases.collect {
         release ->
-            def version = release["name"].substring(1)
+            def version = release["tag_name"].substring(1)
             ["id": version,
              "name": "dependency-check ${version}".toString(),
              "url": "https://github.com/jeremylong/DependencyCheck/releases/download/v${version}/dependency-check-${version}-release.zip".toString()]
