@@ -4,17 +4,6 @@
 import hudson.util.VersionNumber
 import net.sf.json.*
 
-def listFromBintray() {
-    def url = "https://bintray.com/api/v1/packages/jeremy-long/owasp/dependency-check".toURL()
-    def bintray = JSONObject.fromObject(url.text)
-
-    bintray["versions"].collect {
-        version -> ["id": version,
-                    "name": "dependency-check ${version}".toString(),
-                    "url": "https://dl.bintray.com/jeremy-long/owasp/dependency-check-${version}-release.zip".toString()];
-    }
-}
-
 def listFromGithub() {
     def url = "https://api.github.com/repos/jeremylong/dependencycheck/releases".toURL()
     def releases = JSONArray.fromObject(url.text)
@@ -31,8 +20,6 @@ def listFromGithub() {
 
 def listAll() {
     Map versions = new HashMap()
-    listFromBintray().each {
-        version -> versions.put(version["id"], version) }
     listFromGithub().each {version -> versions.put(version["id"], version)}
 
     return versions.values()
