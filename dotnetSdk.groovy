@@ -66,7 +66,7 @@ catch (Throwable t) {
 //region File 2: RID Catalog
 
 private void createRidCatalog() {
-    final JSONObject ridCatalog = fetchJson('https://raw.githubusercontent.com/dotnet/runtime/master/src/libraries/Microsoft.NETCore.Platforms/src/runtime.json')
+    final JSONObject ridCatalog = fetchJson('https://raw.githubusercontent.com/dotnet/runtime/main/src/libraries/Microsoft.NETCore.Platforms/src/runtime.json')
     final String[] rids = ridCatalog.getJSONObject('runtimes').keySet().toArray()
     // TODO: Maybe sort this list so that names with fewer parts sort before those with more.
     // TODO: Specifically, sort 'tizen-4.0.0' and 'tizen-5.0.0' before 'tizen-4.0.0-x64' and 'tizen-5.0.0-x64'
