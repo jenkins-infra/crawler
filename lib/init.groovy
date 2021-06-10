@@ -3,7 +3,7 @@
 package lib;
 import java.util.logging.*;
 
-@GrabResolver(name="repo.jenkins-ci.org",root='http://repo.jenkins-ci.org/public/')
+@GrabResolver(name="repo.jenkins-ci.org",root='https://repo.jenkins-ci.org/public/')
 @GrabExclude('nekohtml:nekohtml')
 @Grapes([
     @Grab("net.sourceforge.nekohtml:nekohtml:1.9.13"),
