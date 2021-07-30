@@ -6,17 +6,6 @@ import com.gargoylesoftware.htmlunit.xml.XmlPage
 import hudson.util.VersionNumber
 import net.sf.json.*
 
-def listFromBintray() {
-    def url = "https://bintray.com/api/v1/packages/sbt/native-packages/sbt".toURL()
-	def bintray = JSONObject.fromObject(url.text)
-
-	bintray["versions"].collect {
-        version -> ["id": version,
-                    "name": "sbt ${version}".toString(),
-                    "url": "https://dl.bintray.com/sbt/native-packages/sbt/${version}/sbt-${version}.zip".toString()];
-    }
-}
-
 def listFromMaven() {
     String baseUrl = 'https://repo1.maven.org/maven2/org/scala-sbt/sbt'
     URL metaUrl = new URL("$baseUrl/maven-metadata.xml")
@@ -43,7 +32,6 @@ def getGithubArtifactUrl(String version) {
 
 def listAll() {
     List versions = new ArrayList()
-    versions.addAll(listFromBintray())
     versions.addAll(listFromMaven())
 
     return versions

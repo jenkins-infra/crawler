@@ -9,7 +9,6 @@ import net.sf.json.JSONObject
 def getList() {
     List versions = new ArrayList()
     versions.addAll(getCentralVersions())
-    versions.addAll(getBintrayVersions())
     versions.addAll(getSonatypeVersions())
     return versions
 }
@@ -29,24 +28,6 @@ def getCentralVersions() {
         return ["id"  : version,
                 "name": version,
                 "url" : String.format('%s/%s/allure-commandline-%s.zip', baseUrl, version, version)
-        ]
-    }
-}
-
-def getBintrayVersions() {
-    String baseUrl = 'https://dl.bintray.com/qameta/generic/io/qameta/allure/allure'
-    WebClient wc = new WebClient()
-    HtmlPage meta = wc.getPage(baseUrl)
-
-    List<String> versions = meta.getByXPath("//body/pre")
-            .collect() { DomElement e -> e.getTextContent().replace("/", "") }
-            .findAll() { e -> !e.contains('BETA') }
-            .reverse()
-
-    return versions.collect() { version ->
-        return ["id"  : version,
-                "name": version,
-                "url" : String.format('%s/%s/allure-%s.zip', baseUrl, version, version)
         ]
     }
 }
