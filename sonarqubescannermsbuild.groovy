@@ -9,7 +9,7 @@ def json = []
 
 def maxNumberOfReleases = 2
   
-for (i = 0; i < maxNumberOfReleases - 1; i++) {
+for (i = 0; i <= maxNumberOfReleases - 1; i++) {
   JSONObject release = releases[i]
   def tagName = release.get("tag_name")
   if (!release.get("draft") && !release.get("prerelease") && !tagName.toLowerCase().contains("vsts")) {
