@@ -12,7 +12,7 @@ p.getByXPath("//a[@href]").grep { it.hrefAttribute =~ /\/terraform\/.*/ }.each {
         def m = (it.textContent =~ /terraform.*(\d+.\d+.\d+)_(.*)_(.*).zip/)
         if (m) {
             def verId = "${m[0][1]}-${m[0][2]}-${m[0][3]}".toString()
-            json << ["id": verId, "name": "Terraform ${m[0][1]} ${m[0][2]} (${m[0][3]})".toString(), "url": "${baseUrl}${it.hrefAttribute}".toString()];
+            json << ["id": verId, "name": "Terraform ${m[0][1]} ${m[0][2]} (${m[0][3]})".toString(), "url": "${it.hrefAttribute}".toString()];
         }
     }
 }
