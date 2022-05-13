@@ -13,7 +13,7 @@ p.getByXPath("//a[@href]").grep { it.hrefAttribute =~ /\/packer\/.*/ }.each {
         def m = (it.textContent =~ /packer_.*(\d+.\d+.\d+)_(.*)_(.*).zip/)
         if (m) {
             def verId = "${m[0][1]}-${m[0][2]}-${m[0][3]}".toString()
-            json << ["id": verId, "name": "Packer ${m[0][1]} ${m[0][2]} (${m[0][3]})".toString(), "url": "${baseUrl}${it.hrefAttribute}".toString()];
+            json << ["id": verId, "name": "Packer ${m[0][1]} ${m[0][2]} (${m[0][3]})".toString(), "url": "${it.hrefAttribute}".toString()];
         }
     }
 }
