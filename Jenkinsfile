@@ -41,12 +41,9 @@ node('linux') {
                 if (infra.isTrusted()) {
                     withCredentials([[$class: 'ZipFileBinding', credentialsId: 'update-center-signing', variable: 'SECRET']]) {
                         withEnv([
-                            "COMMAND=${command}",
+                            "JENKINS_SIGNER=\"-key '${env.SECRET}/update-center.key' -certificate '${env.SECRET}/update-center.cert' -root-certificate '${env.SECRET}/jenkins-update-center-root-ca.crt'\"",
                         ]) {
-                            sh '''
-                            export JENKINS_SIGNER="-key '${SECRET}/update-center.key' -certificate '${SECRET}/update-center.cert' -root-certificate '${SECRET}/jenkins-update-center-root-ca.crt'";
-                            ${COMMAND}
-                            '''
+                            sh command
                         }
                     }
                 }
