@@ -27,9 +27,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.jenkins-ci.main</groupId>
-      <artifactId>jenkins-core</artifactId>
-      <version>1.409</version>
+      <groupId>org.jenkins-ci</groupId>
+      <artifactId>version-number</artifactId>
+      <version>1.10</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci</groupId>
