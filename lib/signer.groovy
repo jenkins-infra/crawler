@@ -13,7 +13,7 @@ dir.eachFileRecurse (FileType.FILES) { file ->
 
 list.each {
   String file  = it.path
-  println "== ${file}"
+  println "== Checking file: ${file}"
 
   // Load content of JSON file to be signed
   File inputfile = new File(file)
@@ -27,8 +27,8 @@ list.each {
   int commaIndex = utf8Content.indexOf(',')
   // Do not forget to remove the closing parenthses char at the end
   String jsonBody = utf8Content.substring(commaIndex + 1, utf8Content.length()-1)
-  if(jsonBody.length()<1) {
-    println "ERROR: the JSON body in the ${file} is empty. Exiting."
+  if(!jsonBody.contains(':') || jsonBody.length() < 100 ) {
+    println "ERROR: the JSON body in the ${file} is empty or with harmful content. Exiting."
     System.exit(1)
   }
 
@@ -42,5 +42,5 @@ list.each {
 
   // Write HTML file (with signed content)
   new File("${file}.html").write("\uFEFF<!DOCTYPE html><html><head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8' /></head><body><script>window.onload = function () { window.parent.postMessage(JSON.stringify(\n${jsonContent.toString(2)}\n),'*'); };</script></body></html>","UTF-8");
-  println "== ${file}.html"
+  println "== Writing file: ${file}.html"
 }
