@@ -4,8 +4,20 @@ import com.gargoylesoftware.htmlunit.html.*;
 
 import net.sf.json.*
 import com.gargoylesoftware.htmlunit.WebClient
+import com.gargoylesoftware.htmlunit.BrowserVersion
 
-def wc = new WebClient()
+final String applicationName = "APPNAME";
+final String applicationVersion = "APPVERSION";
+final String userAgent = "USERAGENT";
+
+final BrowserVersion browser =
+        new BrowserVersion.BrowserVersionBuilder(BrowserVersion.BEST_SUPPORTED)
+            .setApplicationName(applicationName)
+            .setApplicationVersion(applicationVersion)
+            .setUserAgent(userAgent)
+            .build();
+
+def wc = new WebClient(browser);
 def baseUrl = 'https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/'
 HtmlPage p = wc.getPage(baseUrl);
 
