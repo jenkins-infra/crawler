@@ -28,7 +28,7 @@ def json = [];
 p.getByXPath("//a[@href]").reverse().collect { HtmlAnchor e ->
     def url = baseUrl + e.getHrefAttribute()
     println url
-    def m = (url =~ /groovy-binary-(\d.\d.\d).zip$/)
+    def m = (url =~ /groovy-binary-(\d+.\d+.\d+).zip$/)
     if (m) {
         json << ["id":m[0][1], "name": "Groovy ${m[0][1]}".toString(), "url":url];
     }
