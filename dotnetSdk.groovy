@@ -266,6 +266,7 @@ private void createSdkDownloads() {
         def version = [:]
         version['name'] = v.getString('product') + ' ' + v.getString('channel-version')
         version['status'] = v.getString('support-phase').toUpperCase()
+        version['type'] = v.getString('release-type').toUpperCase()
         version['endOfSupport'] = v.get('eol-date')
         def releases = []
         final JSONObject channel = fetchJson(v.getString('releases.json'))
