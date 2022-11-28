@@ -32,10 +32,6 @@ data.each { release ->
     }
     def bundleDate = (tagname =~ /codeql-bundle-(.*)/)[0][1]
 
-    if(bundleDate.toInteger() < 20200826) {
-        return
-    }
-
     def bundleversion = ( release.body =~ /.*v([0-9]+\.[0-9]+\..*)/)[0][1]
 
     r.put("id", bundleversion )

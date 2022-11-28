@@ -10,7 +10,7 @@ if (dir.isDirectory() && new File(dir, ".git").isDirectory()) {
     "git pull --rebase origin master".execute([], dir).waitFor()
 } else {
      dir.mkdirs()
-    "git clone git://github.com/jenkinsci/jenkins-scripts -b master".execute().waitFor()
+    "git clone https://github.com/jenkinsci/jenkins-scripts -b master".execute().waitFor()
 }
 
 def scriptlerDir = new File(dir, "scriptler")

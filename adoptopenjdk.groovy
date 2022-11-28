@@ -8,7 +8,7 @@ import net.sf.json.JSONObject
 class ListAdoptOpenJDK {
     private final WebClient wc;
 
-    private final String API_URL = "https://api.adoptopenjdk.net/v3";
+    private final String API_URL = "https://api.adoptium.net/v3";
 
     ListAdoptOpenJDK() {
         wc = new WebClient();
@@ -33,7 +33,6 @@ class ListAdoptOpenJDK {
         JSONObject data = JSONObject.fromObject(response.getContentAsString())
 
         result.addAll(getReleases(data.available_releases as JSONArray, "HotSpot"))
-        result.addAll(getReleases(data.available_releases as JSONArray, "OpenJ9"))
 
         return new JSONObject()
                 .element("version", 2)
@@ -50,7 +49,7 @@ class ListAdoptOpenJDK {
             int page = 0
             boolean keepGoing = true
             while (keepGoing) {
-                Page a = wc.getPage(API_URL + "/assets/feature_releases/" + feature_version + "/ga?vendor=adoptopenjdk&project=jdk&image_type=jdk&sort_method=DEFAULT&sort_order=DESC&page_size=20&page=" + (page++) + "&jvm_impl=" + openjdk_impl)
+                Page a = wc.getPage(API_URL + "/assets/feature_releases/" + feature_version + "/ga?vendor=eclipse&project=jdk&image_type=jdk&sort_method=DEFAULT&sort_order=DESC&page_size=20&page=" + (page++) + "&jvm_impl=" + openjdk_impl)
                 WebResponse ar = a.getWebResponse()
                 if (ar.getStatusCode() == 200) {
                     JSONArray assets = JSONArray.fromObject(ar.getContentAsString())
