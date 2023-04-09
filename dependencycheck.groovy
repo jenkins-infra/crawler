@@ -4,8 +4,8 @@
 import hudson.util.VersionNumber
 import net.sf.json.*
 
-def listFromGithub() {
-    def url = "https://api.github.com/repos/jeremylong/dependencycheck/releases".toURL()
+def listFromGithub(int page) {
+    def url = ("https://api.github.com/repos/jeremylong/dependencycheck/releases?per_page=50&page=" + page).toURL()
     def releases = JSONArray.fromObject(url.text)
 
     releases.collect {
@@ -20,7 +20,13 @@ def listFromGithub() {
 
 def listAll() {
     Map versions = new HashMap()
-    listFromGithub().each {version -> versions.put(version["id"], version)}
+    for (int page = 0;; page++) {
+        def releases = listFromGithub(page)
+        releases.each {version -> versions.put(version["id"], version)}
+        if (releases.isEmpty()) {
+            break; // do {} until {}
+        }
+    }
 
     return versions.values()
             .findAll { it != null }
