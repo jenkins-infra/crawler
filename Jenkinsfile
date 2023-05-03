@@ -39,7 +39,7 @@ node('linux') {
 
             timestamps {
                 if (infra.isTrusted()) {
-                    withCredentials([[$class: 'ZipFileBinding', credentialsId: 'update-center-signing', variable: 'SECRET']]) {
+                    withCredentials([[$class: 'ZipFileBinding', credentialsId: 'update-center-signing-2023', variable: 'SECRET']]) {
                         sh """
                             export JENKINS_SIGNER="-key \"$SECRET/update-center.key\" -certificate \"$SECRET/update-center.cert\" -root-certificate \"$SECRET/jenkins-update-center-root-ca.crt\"";
                             ${command}
