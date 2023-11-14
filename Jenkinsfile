@@ -74,8 +74,6 @@ node('linux') {
                 string(credentialsId: 'aws-secret-access-key-updatesjenkinsio', variable: 'AWS_SECRET_ACCESS_KEY')
             ]) {
                 sh '''
-                ls -al updates/
-
                 azcopy sync updates/ "${UPDATES_FILE_SHARE_URL}" --exclude-path '.svn' --recursive=true --delete-destination=true
 
                 ## Note: AWS CLI are configured through environment variables (from Jenkins credentials) - https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
