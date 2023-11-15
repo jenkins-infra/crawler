@@ -69,7 +69,7 @@ node('linux') {
                 sh 'rsync -avz  -e \'ssh -o StrictHostKeyChecking=no\' --exclude=.svn updates/ www-data@updates.jenkins.io:/var/www/updates.jenkins.io/updates/'
             }
             withCredentials([
-                string(credentialsId: 'updates-jenkins-io-file-share-url-with-sas-token', variable: 'UPDATES_FILE_SHARE_URL'),
+                string(credentialsId: 'updates-jenkins-io-file-share-sas-token-query-string', variable: 'UPDATES_FILE_SHARE_QUERY_STRING'),
                 string(credentialsId: 'aws-access-key-id-updatesjenkinsio', variable: 'AWS_ACCESS_KEY_ID'),
                 string(credentialsId: 'aws-secret-access-key-updatesjenkinsio', variable: 'AWS_SECRET_ACCESS_KEY')
             ]) {
@@ -79,10 +79,10 @@ node('linux') {
                     'UPDATES_R2_ENDPOINT=https://8d1838a43923148c5cee18ccc356a594.r2.cloudflarestorage.com',
                 ]) {
                     sh '''
-                    azcopy sync updates/ "${UPDATES_FILE_SHARE_URL}" --exclude-path '.svn' --recursive=true
+                    azcopy sync ./updates/ "https://updatesjenkinsio.file.core.windows.net/updates-jenkins-io/updates/?${UPDATES_FILE_SHARE_QUERY_STRING}" --exclude-path '.svn' --recursive=true
 
                     ## Note: AWS CLI are configured through environment variables (from Jenkins credentials) - https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
-                    aws s3 sync updates/ s3://"${UPDATES_R2_BUCKETS}"/ \
+                    aws s3 sync ./updates/ s3://"${UPDATES_R2_BUCKETS}"/updates/ \
                         --no-progress \
                         --no-follow-symlinks \
                         --size-only \
