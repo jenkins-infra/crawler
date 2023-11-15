@@ -33,6 +33,7 @@ node('linux') {
             String command = '''
                 for f in *.groovy
                 do
+                    echo "= Crawler '$f':"
                     groovy -Dgrape.config=./grapeConfig.xml ./lib/runner.groovy $f || true
                 done
             '''
