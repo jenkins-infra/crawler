@@ -21,7 +21,7 @@ for (JSONObject release : releases) {
               "name": "SonarScanner for MSBuild ${tagName}".toString(),
               "url": "https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/${tagName}/sonar-scanner-msbuild-${tagName}.zip".toString()];
 
-    } else {
+    } else if (tagName.startsWith("5.") || tagName.startsWith("4.")) {
       json << ["id": tagName,
              "name": "SonarScanner for MSBuild ${tagName} - .NET Fwk 4.6".toString(),
              "url": "https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/${tagName}/sonar-scanner-msbuild-${tagName}-net46.zip".toString()];
@@ -37,6 +37,16 @@ for (JSONObject release : releases) {
       json << ["id": "${tagName}-netcore3".toString(),
              "name": "SonarScanner for MSBuild ${tagName} - .NET Core 3.0".toString(),
              "url": "https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/${tagName}/sonar-scanner-msbuild-${tagName}-netcoreapp3.0.zip".toString()];
+
+    } else {
+      json << ["id": "${tagName}-net-framework".toString(),
+             "name": "SonarScanner for .NET Framework ${tagName}".toString(),
+             "url": "https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/${tagName}/sonar-scanner-${tagName}-net-framework.zip".toString()];
+
+      json << ["id": "${tagName}-net".toString(),
+             "name": "SonarScanner for .NET ${tagName}".toString(),
+             "url": "https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/${tagName}/sonar-scanner-${tagName}-net.zip".toString()];
+
     }
   }
 }
