@@ -1,15 +1,15 @@
 #!./lib/runner.groovy
 // Generates server-side metadata for Ant
-import com.gargoylesoftware.htmlunit.WebClient
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor
-import com.gargoylesoftware.htmlunit.html.HtmlPage
+import org.htmlunit.WebClient
+import org.htmlunit.html.HtmlAnchor
+import org.htmlunit.html.HtmlPage
 import java.util.regex.Pattern
 import net.sf.json.JSONObject
 import hudson.util.VersionNumber
 
 def listUp(url,pattern) {
     wc = new WebClient()
-    wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+    wc.setCssErrorHandler(new org.htmlunit.SilentCssErrorHandler());
     wc.getOptions().setJavaScriptEnabled(false);
     wc.getOptions().setThrowExceptionOnScriptError(false);
     wc.getOptions().setThrowExceptionOnFailingStatusCode(false);

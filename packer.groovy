@@ -1,8 +1,8 @@
 #!./lib/runner.groovy
 // Generates server-side metadata for Packer auto-installation
-import com.gargoylesoftware.htmlunit.html.*;
+import org.htmlunit.html.*;
 import net.sf.json.*
-import com.gargoylesoftware.htmlunit.WebClient
+import org.htmlunit.WebClient
 
 def baseUrl = 'https://releases.hashicorp.com'
 def json = []

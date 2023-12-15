@@ -1,7 +1,7 @@
 #!./lib/runner.groovy
 // Generates server-side metadata for Gradle auto-installation
-import com.gargoylesoftware.htmlunit.html.*;
-import com.gargoylesoftware.htmlunit.WebClient
+import org.htmlunit.html.*;
+import org.htmlunit.WebClient
 
 import net.sf.json.*
 

@@ -1,9 +1,9 @@
 #!./lib/runner.groovy
 // Generates server-side metadata for CMake auto-installation
-import com.gargoylesoftware.htmlunit.html.*
+import org.htmlunit.html.*
 import net.sf.json.*
-import com.gargoylesoftware.htmlunit.WebClient
-import com.gargoylesoftware.htmlunit.BrowserVersion
+import org.htmlunit.WebClient
+import org.htmlunit.BrowserVersion
 
 def baseUrl = 'https://cmake.org/files/'
 
@@ -13,7 +13,7 @@ def wc = new WebClient(
         .setApplicationVersion("1.0")
         .build()
 )
-wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+wc.setCssErrorHandler(new org.htmlunit.SilentCssErrorHandler());
 wc.getOptions().setJavaScriptEnabled(false);
 wc.getOptions().setThrowExceptionOnScriptError(false);
 wc.getOptions().setThrowExceptionOnFailingStatusCode(false);

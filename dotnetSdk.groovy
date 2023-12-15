@@ -1,9 +1,9 @@
 #!./lib/runner.groovy
 // Generates data files used by the dotnet-sdk-plugin, both for SDK installation and for auto-completion.
 
-import com.gargoylesoftware.htmlunit.Page
-import com.gargoylesoftware.htmlunit.SilentCssErrorHandler
-import com.gargoylesoftware.htmlunit.WebClient
+import org.htmlunit.Page
+import org.htmlunit.SilentCssErrorHandler
+import org.htmlunit.WebClient
 import net.sf.json.JSONArray
 import net.sf.json.JSONException
 import net.sf.json.JSONObject
