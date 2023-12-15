@@ -6,7 +6,7 @@ import java.util.logging.*;
 @GrabResolver(name="repo.jenkins-ci.org",root='https://repo.jenkins-ci.org/public/')
 @GrabExclude('nekohtml:nekohtml')
 @Grapes([
-    @Grab("net.sourceforge.nekohtml:nekohtml:1.9.13"),
+    @Grab("net.sourceforge.nekohtml:nekohtml:1.9.21"),
     @Grab("org.htmlunit:htmlunit:3.9.0"),
     @Grab("org.jenkins-ci:update-center2:2.0")
 ])
