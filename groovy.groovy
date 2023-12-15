@@ -1,10 +1,10 @@
 #!./lib/runner.groovy
 // Generates server-side metadata for Groovy auto-installation
-import com.gargoylesoftware.htmlunit.html.*;
+import org.htmlunit.html.*;
 
 import net.sf.json.*
-import com.gargoylesoftware.htmlunit.WebClient
-import com.gargoylesoftware.htmlunit.BrowserVersion
+import org.htmlunit.WebClient
+import org.htmlunit.BrowserVersion
 
 final String applicationName = "crawler";
 final String applicationVersion = "1.0";

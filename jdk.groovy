@@ -1,22 +1,21 @@
 #!./lib/runner.groovy
 // Generates server-side metadata for Oracle JDK
-import com.gargoylesoftware.htmlunit.WebClient
-import com.gargoylesoftware.htmlunit.BrowserVersion
+import org.htmlunit.WebClient
+import org.htmlunit.BrowserVersion
 import net.sf.json.JSONObject
 import org.kohsuke.args4j.CmdLineException
 import java.security.GeneralSecurityException
 import net.sf.json.JSONArray
 import java.util.regex.Pattern
 import java.util.regex.Matcher
-import com.gargoylesoftware.htmlunit.html.HtmlPage
-import net.sourceforge.htmlunit.corejs.javascript.IdScriptableObject
+import org.htmlunit.html.HtmlPage
 
 public class ListJDK {
     private final WebClient wc;
 
     public ListJDK() {
         wc = new WebClient(BrowserVersion.BEST_SUPPORTED); // INTERNET_EXPLORER);
-        wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+        wc.setCssErrorHandler(new org.htmlunit.SilentCssErrorHandler());
         wc.getOptions().setThrowExceptionOnScriptError(false);
         wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
     }
@@ -117,27 +116,12 @@ public class ListJDK {
             // no downloads/legacy method on page
             return new JSONObject()
         }
-        return (JSONObject)toJSON(results);
+        return (JSONObject)results;
     }
 
     private JSONObject combine(JSONObject... args) {
         JSONObject o = new JSONObject();
         args.each { a -> o.putAll(a); }
-        return o;
-    }
-
-    private Object toJSON(Object o) {
-        // the code in the page instantiates array but uses it as an object,
-        // so we convert them all into JSONObject
-        if (o instanceof IdScriptableObject) {
-            IdScriptableObject na = (IdScriptableObject) o;
-            JSONObject ja = new JSONObject();
-            for (Object key : na.getIds()) {
-                ja.put(key.toString(), toJSON(na.get(key)));
-            }
-            return ja;
-        }
-        // primitives
         return o;
     }
 

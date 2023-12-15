@@ -1,7 +1,7 @@
 #!./lib/runner.groovy
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor
-import com.gargoylesoftware.htmlunit.html.HtmlPage
-import com.gargoylesoftware.htmlunit.WebClient
+import org.htmlunit.html.HtmlAnchor
+import org.htmlunit.html.HtmlPage
+import org.htmlunit.WebClient
 
 import net.sf.json.*
 
@@ -13,7 +13,7 @@ def urls = []
 
 // Disable JS, as we don't care about it
 WebClient webClient = new WebClient()
-webClient.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+webClient.setCssErrorHandler(new org.htmlunit.SilentCssErrorHandler());
 webClient.getOptions().setJavaScriptEnabled(false);
 webClient.getOptions().setThrowExceptionOnScriptError(false);
 webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);

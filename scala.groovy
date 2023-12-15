@@ -2,8 +2,8 @@
 // Generates server-side metadata for Scala auto-installation
 import java.net.URI
 import net.sf.json.*
-import com.gargoylesoftware.htmlunit.WebClient
-import com.gargoylesoftware.htmlunit.html.*
+import org.htmlunit.WebClient
+import org.htmlunit.html.*
 
 def wc = new WebClient()
 

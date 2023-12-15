@@ -1,8 +1,8 @@
 #!./lib/runner.groovy
 // Generates server-side metadata for Sonar Runner
-import com.gargoylesoftware.htmlunit.WebClient
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor
-import com.gargoylesoftware.htmlunit.html.HtmlPage
+import org.htmlunit.WebClient
+import org.htmlunit.html.HtmlAnchor
+import org.htmlunit.html.HtmlPage
 import java.util.regex.Pattern
 import net.sf.json.JSONObject
 import hudson.util.VersionNumber
@@ -10,7 +10,7 @@ import hudson.util.VersionNumber
 def listFromOldCodehausURL() {
     def url = "https://repo1.maven.org/maven2/org/codehaus/sonar-plugins/sonar-runner/";
     def wc = new WebClient()
-    wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+    wc.setCssErrorHandler(new org.htmlunit.SilentCssErrorHandler());
     wc.getOptions().setJavaScriptEnabled(false);
     wc.getOptions().setThrowExceptionOnScriptError(false);
     wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
@@ -32,7 +32,7 @@ def listFromOldCodehausURL() {
 def listFromNewCodehausUrl() {
     def url = "https://repo1.maven.org/maven2/org/codehaus/sonar/runner/sonar-runner-dist/";
     def wc = new WebClient()
-    wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+    wc.setCssErrorHandler(new org.htmlunit.SilentCssErrorHandler());
     wc.getOptions().setJavaScriptEnabled(false);
     wc.getOptions().setThrowExceptionOnScriptError(false);
     wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
@@ -54,7 +54,7 @@ def listFromNewCodehausUrl() {
 def listFromNewSonarSourceUrl() {
     def url = "https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/";
     def wc = new WebClient()
-    wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+    wc.setCssErrorHandler(new org.htmlunit.SilentCssErrorHandler());
     wc.getOptions().setJavaScriptEnabled(false);
     wc.getOptions().setThrowExceptionOnScriptError(false);
     wc.getOptions().setThrowExceptionOnFailingStatusCode(false);

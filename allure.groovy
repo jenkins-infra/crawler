@@ -1,9 +1,9 @@
 #!./lib/runner.groovy
 // Generates server-side metadata for Allure
-import com.gargoylesoftware.htmlunit.WebClient
-import com.gargoylesoftware.htmlunit.html.DomElement
-import com.gargoylesoftware.htmlunit.html.HtmlPage
-import com.gargoylesoftware.htmlunit.xml.XmlPage
+import org.htmlunit.WebClient
+import org.htmlunit.html.DomElement
+import org.htmlunit.html.HtmlPage
+import org.htmlunit.xml.XmlPage
 import net.sf.json.JSONObject
 
 def getList() {

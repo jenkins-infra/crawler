@@ -1,12 +1,12 @@
 #!./lib/runner.groovy
 // Generates server-side metadata for Play auto-installation
-import com.gargoylesoftware.htmlunit.html.*;
+import org.htmlunit.html.*;
 
 import net.sf.json.*
-import com.gargoylesoftware.htmlunit.WebClient
+import org.htmlunit.WebClient
 
 def wc = new WebClient()
-wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+wc.setCssErrorHandler(new org.htmlunit.SilentCssErrorHandler());
 wc.getOptions().setJavaScriptEnabled(false);
 wc.getOptions().setThrowExceptionOnScriptError(false);
 wc.getOptions().setThrowExceptionOnFailingStatusCode(false);

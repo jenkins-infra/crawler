@@ -1,7 +1,7 @@
 #!./lib/runner.groovy
-import com.gargoylesoftware.htmlunit.WebClient
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor
-import com.gargoylesoftware.htmlunit.html.HtmlPage
+import org.htmlunit.WebClient
+import org.htmlunit.html.HtmlAnchor
+import org.htmlunit.html.HtmlPage
 import hudson.util.VersionNumber
 import net.sf.json.JSONObject
 
@@ -9,7 +9,7 @@ import java.util.regex.Pattern
 // Generates server-side metadata for Flyway command-line
 def webclient (){
   def wc = new WebClient()
-  wc.setCssErrorHandler(new com.gargoylesoftware.htmlunit.SilentCssErrorHandler());
+  wc.setCssErrorHandler(new org.htmlunit.SilentCssErrorHandler());
   wc.getOptions().setThrowExceptionOnScriptError(false);
   wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
   return wc

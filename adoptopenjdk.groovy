@@ -1,7 +1,7 @@
 #!./lib/runner.groovy
-import com.gargoylesoftware.htmlunit.Page
-import com.gargoylesoftware.htmlunit.WebClient
-import com.gargoylesoftware.htmlunit.WebResponse
+import org.htmlunit.Page
+import org.htmlunit.WebClient
+import org.htmlunit.WebResponse
 import net.sf.json.JSONArray
 import net.sf.json.JSONObject
 
