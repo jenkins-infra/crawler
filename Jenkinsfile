@@ -22,8 +22,8 @@ node('linux') {
     withEnv([
             "PATH+GROOVY=${tool 'groovy'}/bin",
             "PATH+MVN=${tool 'mvn'}/bin",
-            "JAVA_HOME=${tool 'jdk8'}",
-            "PATH+JAVA=${tool 'jdk8'}/bin"
+            "JAVA_HOME=${tool 'jdk17'}",
+            "PATH+JAVA=${tool 'jdk17'}/bin"
     ]) {
         stage('Build') {
             sh 'mvn -e clean install'
