@@ -80,16 +80,17 @@ node('linux') {
                     'UPDATES_R2_ENDPOINT=https://8d1838a43923148c5cee18ccc356a594.r2.cloudflarestorage.com',
                 ]) {
                     sh '''
+                    echo 'https://github.com/jenkins-infra/helpdesk/issues/3875'
                     ## Commented out until https://github.com/jenkins-infra/helpdesk/issues/3875 is resolved (credential issue)
                     # azcopy sync ./updates/ "https://updatesjenkinsio.file.core.windows.net/updates-jenkins-io/updates/?${UPDATES_FILE_SHARE_QUERY_STRING}" --exclude-path '.svn' --recursive=true
 
                     ## Note: AWS CLI are configured through environment variables (from Jenkins credentials) - https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
-                    aws s3 sync ./updates/ s3://"${UPDATES_R2_BUCKETS}"/updates/ \
-                        --no-progress \
-                        --no-follow-symlinks \
-                        --size-only \
-                        --exclude '.svn' \
-                        --endpoint-url "${UPDATES_R2_ENDPOINT}"
+                    #aws s3 sync ./updates/ s3://"${UPDATES_R2_BUCKETS}"/updates/ \
+                    #    --no-progress \
+                    #    --no-follow-symlinks \
+                    #    --size-only \
+                    #    --exclude '.svn' \
+                    #    --endpoint-url "${UPDATES_R2_ENDPOINT}"
                     '''
                 }
             }
