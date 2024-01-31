@@ -2,7 +2,7 @@
 // Generates server-side metadata for SonarScanner for MSBuild
 import net.sf.json.*
 
-def url = "https://api.github.com/repos/SonarSource/sonar-scanner-msbuild/releases".toURL()
+def url = "https://api.github.com/repos/SonarSource/sonar-scanner-msbuild/releases?per_page=100".toURL()
 def releases = JSONArray.fromObject(url.text)
 
 def json = []
