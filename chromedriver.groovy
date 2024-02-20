@@ -1,5 +1,6 @@
 #!./lib/runner.groovy
 // Generates server-side metadata for chromedriver auto-installation
+import net.sf.json.JSONObject
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 
@@ -18,4 +19,4 @@ chromeDriverData.each { entry ->
     jsonList << ["id": id, "url": entry_url]
 }
 
-lib.DataWriter.write("org.jenkins-ci.plugins.chromedriver.ChromeDriver",JSONObject.fromObject([list:json]));
+lib.DataWriter.write("org.jenkins-ci.plugins.chromedriver.ChromeDriver",JSONObject.fromObject([list:jsonList]))
