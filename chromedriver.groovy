@@ -13,9 +13,9 @@ def jsonList = []
 def stableData = jsonData.channels.Stable
 def chromeDriverData = stableData.downloads.chromedriver
 chromeDriverData.each { entry ->
-def id = "${entry.platform}_${stableData.version}"
-def url = entry.url
-jsonList << ["id": id, "url": url]
+    def id = "${entry.platform}_${stableData.version}"
+    def entry_url = entry.url
+    jsonList << ["id": id, "url": entry_url]
 }
 
 lib.DataWriter.write("org.jenkins-ci.plugins.chromedriver.ChromeDriver",JSONObject.fromObject([list:json]));
