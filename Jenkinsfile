@@ -83,12 +83,12 @@ node('linux') {
                     azcopy sync ./updates/ "https://updatesjenkinsio.file.core.windows.net/updates-jenkins-io/updates/?${UPDATES_FILE_SHARE_QUERY_STRING}" --exclude-path '.svn' --recursive=true
 
                     ## Note: AWS CLI are configured through environment variables (from Jenkins credentials) - https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
-                    aws s3 sync ./updates/ s3://"${UPDATES_R2_BUCKETS}"/updates/ \
-                        --no-progress \
-                        --no-follow-symlinks \
-                        --size-only \
-                        --exclude '.svn' \
-                        --endpoint-url "${UPDATES_R2_ENDPOINT}"
+                    # aws s3 sync ./updates/ s3://"${UPDATES_R2_BUCKETS}"/updates/ \
+                    #    --no-progress \
+                    #    --no-follow-symlinks \
+                    #    --size-only \
+                    #    --exclude '.svn' \
+                    #    --endpoint-url "${UPDATES_R2_ENDPOINT}"
                     '''
                 }
             }
