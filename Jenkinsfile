@@ -90,6 +90,9 @@ node('linux') {
                     'STORAGE_PERMISSIONS=dlrw'
                 ]) {
                     sh '''
+                    # Don't print any command
+                    set +x
+
                     # Source of this script: https://github.com/jenkins-infra/pipeline-library/tree/master/resources/get-fileshare-signed-url.sh
                     fileShareSignedUrl=$(get-fileshare-signed-url.sh)
                     azcopy sync ./updates/ "${fileShareSignedUrl}" --exclude-path '.svn' --recursive=true
