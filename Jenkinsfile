@@ -67,7 +67,7 @@ node('linux') {
                 cp target/*.json target/*.html updates
             '''
             sshagent(['updates-rsync-key']) {
-                sh 'rsync -avz  -e \'ssh -o StrictHostKeyChecking=no\' --exclude=.svn updates/ www-data@updates.jenkins.io:/var/www/updates.jenkins.io/updates/'
+                sh 'rsync -rlptDvz -e \'ssh -o StrictHostKeyChecking=no\' --exclude=.svn --chown=mirrorbrain:www-data updates/ mirrorbrain@updates.jenkins.io:/var/www/updates.jenkins.io/updates/'
             }
             withCredentials([
                 azureServicePrincipal(
