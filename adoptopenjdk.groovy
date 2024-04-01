@@ -41,40 +41,55 @@ class ListAdoptOpenJDK {
 
     private JSONArray getReleases(JSONArray available_releases, String jvm_impl) {
         JSONArray result = new JSONArray()
-        String openjdk_impl = jvm_impl.toLowerCase()
         available_releases.each { feature_version ->
-            JSONObject r = new JSONObject()
-            r.put("name", "OpenJDK " + feature_version + " - " + jvm_impl)
-            JSONArray releases = new JSONArray()
-            int page = 0
-            boolean keepGoing = true
-            while (keepGoing) {
-                Page a = wc.getPage(API_URL + "/assets/feature_releases/" + feature_version + "/ga?vendor=eclipse&project=jdk&image_type=jdk&sort_method=DEFAULT&sort_order=DESC&page_size=20&page=" + (page++) + "&jvm_impl=" + openjdk_impl)
-                WebResponse ar = a.getWebResponse()
-                if (ar.getStatusCode() == 200) {
-                    JSONArray assets = JSONArray.fromObject(ar.getContentAsString())
-                    releases.addAll(assets.collect {
-                        [
-                                release_name: it.release_name,
-                                openjdk_impl: openjdk_impl,
-                                binaries    : it.binaries.collect {
-                                    [
-                                            architecture: it.architecture,
-                                            os          : it.os,
-                                            openjdk_impl: it.jvm_impl,
-                                            binary_link : it.package.link
-                                    ]
-                                }
-                        ]
-                    })
-                } else {
-                    keepGoing = false
-                }
-            }
-            r.put("releases", releases)
+            JSONObject r = getRelease(feature_version as String, jvm_impl)
             result.add(r)
         }
         return result
+    }
+
+    private JSONObject getRelease(String feature_version, String jvm_impl){
+        String openjdk_impl = jvm_impl.toLowerCase()
+        JSONObject r = new JSONObject()
+        r.put("name", "OpenJDK " + feature_version + " - " + jvm_impl)
+        Map<String, JSONObject> releasesMap = new LinkedHashMap<>();
+        int page = 0
+        boolean keepGoing = true
+        while (keepGoing) {
+            Page a = wc.getPage(API_URL + "/assets/feature_releases/" + feature_version + "/ga?vendor=eclipse&project=jdk&image_type=jdk&sort_method=DEFAULT&sort_order=DESC&page_size=20&page=" + (page++) + "&jvm_impl=" + openjdk_impl)
+            WebResponse ar = a.getWebResponse()
+            if (ar.getStatusCode() == 200) {
+                JSONArray assets = JSONArray.fromObject(ar.getContentAsString())
+                assets.forEach { JSONObject asset -> releasesMap.merge(asset.release_name as String, asset, { v1, v2 ->
+                    if (v1.version_data?.adopt_build_number > v1.version_data?.adopt_build_number){
+                        v1.binaries.addAll(v2.binaries);
+                        return v1;
+                    } else {
+                        v2.binaries.addAll(v1.binaries);
+                        return v2;
+                    }
+                })}
+            } else {
+                keepGoing = false
+            }
+        }
+
+        def releases = releasesMap.values().collect {
+            [
+                    release_name: it.release_name,
+                    openjdk_impl: openjdk_impl,
+                    binaries    : it.binaries.collect {
+                        [
+                                architecture: it.architecture,
+                                os          : it.os,
+                                openjdk_impl: it.jvm_impl,
+                                binary_link : it.package.link
+                        ]
+                    }
+            ]
+        }
+        r.put("releases", releases)
+        return r
     }
 }
 
