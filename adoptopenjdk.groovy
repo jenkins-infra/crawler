@@ -61,7 +61,7 @@ class ListAdoptOpenJDK {
             if (ar.getStatusCode() == 200) {
                 JSONArray assets = JSONArray.fromObject(ar.getContentAsString())
                 assets.forEach { JSONObject asset -> releasesMap.merge(asset.release_name as String, asset, { v1, v2 ->
-                    if (v1.version_data?.adopt_build_number > v1.version_data?.adopt_build_number){
+                    if (v1.version_data?.adopt_build_number > v2.version_data?.adopt_build_number){
                         v1.binaries.addAll(v2.binaries);
                         return v1;
                     } else {
