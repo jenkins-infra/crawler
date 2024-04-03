@@ -95,7 +95,11 @@ node('linux') {
 
                     # Source of this script: https://github.com/jenkins-infra/pipeline-library/tree/master/resources/get-fileshare-signed-url.sh
                     fileShareSignedUrl=$(get-fileshare-signed-url.sh)
-                    azcopy sync ./updates/ "${fileShareSignedUrl}" --exclude-path '.svn' --recursive=true
+                    azcopy sync \
+                        --skip-version-check \
+                        --exclude-path '.svn' \
+                        --recursive=true \
+                        ./updates/ "${fileShareSignedUrl}"
 
                     ## Note: AWS CLI are configured through environment variables (from Jenkins credentials) - https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
                     aws s3 sync ./updates/ s3://"${UPDATES_R2_BUCKETS}"/updates/ \
