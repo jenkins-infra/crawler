@@ -76,7 +76,6 @@ node('linux') {
                     clientSecretVariable : 'JENKINS_INFRA_FILESHARE_CLIENT_SECRET',
                     tenantIdVariable : 'JENKINS_INFRA_FILESHARE_TENANT_ID' 
                 ),
-                string(credentialsId: 'updates-jenkins-io-file-share-sas-token-query-string', variable: 'UPDATES_FILE_SHARE_QUERY_STRING'),
                 string(credentialsId: 'aws-access-key-id-updatesjenkinsio', variable: 'AWS_ACCESS_KEY_ID'),
                 string(credentialsId: 'aws-secret-access-key-updatesjenkinsio', variable: 'AWS_SECRET_ACCESS_KEY')
             ]) {
