@@ -40,7 +40,7 @@ node('linux') {
 
             timestamps {
                 if (infra.isTrusted()) {
-                    withCredentials([[$class: 'ZipFileBinding', credentialsId: 'update-center-signing-2023', variable: 'SECRET']]) {
+                    withCredentials([[$class: 'ZipFileBinding', credentialsId: 'update-center-signing', variable: 'SECRET']]) {
                         sh """
                             export JENKINS_SIGNER="-key \"$SECRET/update-center.key\" -certificate \"$SECRET/update-center.cert\" -root-certificate \"$SECRET/jenkins-update-center-root-ca.crt\"";
                             ${command}
@@ -67,7 +67,7 @@ node('linux') {
                 cp target/*.json target/*.html updates
             '''
             sshagent(['updates-rsync-key']) {
-                sh 'rsync -avz  -e \'ssh -o StrictHostKeyChecking=no\' --exclude=.svn updates/ www-data@updates.jenkins.io:/var/www/updates.jenkins.io/updates/'
+                sh 'rsync -rlptDvz -e \'ssh -o StrictHostKeyChecking=no\' --exclude=.svn --chown=mirrorbrain:www-data updates/ mirrorbrain@updates.jenkins.io:/var/www/updates.jenkins.io/updates/'
             }
             withCredentials([
                 azureServicePrincipal(
@@ -76,7 +76,6 @@ node('linux') {
                     clientSecretVariable : 'JENKINS_INFRA_FILESHARE_CLIENT_SECRET',
                     tenantIdVariable : 'JENKINS_INFRA_FILESHARE_TENANT_ID' 
                 ),
-                string(credentialsId: 'updates-jenkins-io-file-share-sas-token-query-string', variable: 'UPDATES_FILE_SHARE_QUERY_STRING'),
                 string(credentialsId: 'aws-access-key-id-updatesjenkinsio', variable: 'AWS_ACCESS_KEY_ID'),
                 string(credentialsId: 'aws-secret-access-key-updatesjenkinsio', variable: 'AWS_SECRET_ACCESS_KEY')
             ]) {
@@ -95,7 +94,11 @@ node('linux') {
 
                     # Source of this script: https://github.com/jenkins-infra/pipeline-library/tree/master/resources/get-fileshare-signed-url.sh
                     fileShareSignedUrl=$(get-fileshare-signed-url.sh)
-                    azcopy sync ./updates/ "${fileShareSignedUrl}" --exclude-path '.svn' --recursive=true
+                    azcopy sync \
+                        --skip-version-check \
+                        --exclude-path '.svn' \
+                        --recursive=true \
+                        ./updates/ "${fileShareSignedUrl}"
 
                     ## Note: AWS CLI are configured through environment variables (from Jenkins credentials) - https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
                     aws s3 sync ./updates/ s3://"${UPDATES_R2_BUCKETS}"/updates/ \
