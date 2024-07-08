@@ -66,47 +66,81 @@ node('linux') {
                 mkdir -p updates
                 cp target/*.json target/*.html updates
             '''
-            sshagent(['updates-rsync-key']) {
-                sh 'rsync -rlptDvz -e \'ssh -o StrictHostKeyChecking=no\' --exclude=.svn --chown=mirrorbrain:www-data updates/ mirrorbrain@updates.jenkins.io:/var/www/updates.jenkins.io/updates/'
-            }
-            withCredentials([
-                azureServicePrincipal(
-                    credentialsId: 'trusted_ci_jenkins_io_fileshare_serviceprincipal_writer',
-                    clientIdVariable : 'JENKINS_INFRA_FILESHARE_CLIENT_ID',
-                    clientSecretVariable : 'JENKINS_INFRA_FILESHARE_CLIENT_SECRET',
-                    tenantIdVariable : 'JENKINS_INFRA_FILESHARE_TENANT_ID' 
-                ),
-                string(credentialsId: 'aws-access-key-id-updatesjenkinsio', variable: 'AWS_ACCESS_KEY_ID'),
-                string(credentialsId: 'aws-secret-access-key-updatesjenkinsio', variable: 'AWS_SECRET_ACCESS_KEY')
-            ]) {
+            withCredentials([[$class: 'ZipFileBinding', credentialsId: 'update-center-publish-env', variable: 'UPDATE_CENTER_FILESHARES_ENV_FILES']]) {
                 withEnv([
                     'AWS_DEFAULT_REGION=auto',
-                    'UPDATES_R2_BUCKETS=westeurope-updates-jenkins-io',
-                    'UPDATES_R2_ENDPOINT=https://8d1838a43923148c5cee18ccc356a594.r2.cloudflarestorage.com',
-                    'STORAGE_FILESHARE=updates-jenkins-io',
-                    'STORAGE_NAME=updatesjenkinsio',
-                    'STORAGE_DURATION_IN_MINUTE=5',
-                    'STORAGE_PERMISSIONS=dlrw'
+                    // TODO: find a way to reuse 'SYNC_UC_TASKS' from https://github.com/jenkins-infra/update-center2/blob/master/site/publish.sh#L9 to avoid repetition and automate delivery.
                 ]) {
+                    // Rsync copy tasks
                     sh '''
-                    # Don't print any command
+                    . "${UPDATE_CENTER_FILESHARES_ENV_FILES}/.env-rsync-updates.jenkins.io"
+
+                    # Required variables that should now be set from the .env file
+                    : "${RSYNC_HOST?}" "${RSYNC_USER?}" "${RSYNC_GROUP?}" "${RSYNC_REMOTE_DIR?}" "${RSYNC_IDENTITY_NAME?}"
+
+                    rsync -rlptDvz -e "ssh -o StrictHostKeyChecking=no -i ${UPDATE_CENTER_FILESHARES_ENV_FILES}/${RSYNC_IDENTITY_NAME}" --exclude=.svn --chown="${RSYNC_USER}":"${RSYNC_GROUP}" ./updates/ "${RSYNC_USER}"@"${RSYNC_HOST}":"${RSYNC_REMOTE_DIR}"/updates/
+                    '''
+
+                    // Azure copy tasks
+                    sh '''
+                    test -f "${UPDATE_CENTER_FILESHARES_ENV_FILES}/.env-azsync-content"
+
+                    # Don't print any command to avoid exposing credentials
                     set +x
 
-                    # Source of this script: https://github.com/jenkins-infra/pipeline-library/tree/master/resources/get-fileshare-signed-url.sh
-                    fileShareSignedUrl=$(get-fileshare-signed-url.sh)
+                    . "${UPDATE_CENTER_FILESHARES_ENV_FILES}/.env-azsync-content"
+
+                    # Required variables that should now be set from the .env file
+                    : "${STORAGE_NAME?}" "${STORAGE_FILESHARE?}" "${STORAGE_DURATION_IN_MINUTE?}" "${STORAGE_PERMISSIONS?}" "${JENKINS_INFRA_FILESHARE_CLIENT_ID?}" "${JENKINS_INFRA_FILESHARE_CLIENT_SECRET?}" "${JENKINS_INFRA_FILESHARE_TENANT_ID?}"
+
+                    # It's now safe
+                    set -x
+
+                    ## 'get-fileshare-signed-url.sh' command is a script stored in /usr/local/bin used to generate a signed file share URL with a short-lived SAS token
+                    ## Source: https://github.com/jenkins-infra/pipeline-library/blob/master/resources/get-fileshare-signed-url.sh
+                    fileShareUrl="$(get-fileshare-signed-url.sh)"
+                    # We want to append the 'updates/' path on the URI of the generated URL to allow deletion of this subdirectory only
+                    # But the URL has a query string so we need a text transformation
+                    fileShareForCrawler="$(echo $fileShareUrl | sed 's#/?#/updates/?#')"
+
+                    # Fail fast if no share URL can be generated
+                    : "${fileShareForCrawler?}"
+
                     azcopy sync \
-                        --skip-version-check \
+                        --skip-version-check `# Do not check for new azcopy versions (we have updatecli for this)` \
                         --exclude-path '.svn' \
                         --recursive=true \
-                        ./updates/ "${fileShareSignedUrl}"
+                        --delete-destination=true `# important: use relative path for destination otherwise you will delete update_center2 data from the bucket root` \
+                        ./updates/ "${fileShareForCrawler}"
+                    '''
 
-                    ## Note: AWS CLI are configured through environment variables (from Jenkins credentials) - https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
-                    aws s3 sync ./updates/ s3://"${UPDATES_R2_BUCKETS}"/updates/ \
-                        --no-progress \
-                        --no-follow-symlinks \
-                        --size-only \
-                        --exclude '.svn' \
-                        --endpoint-url "${UPDATES_R2_ENDPOINT}"
+                    // AWS copy tasks
+                    sh '''
+                    for bucket in "s3sync-westeurope" "s3sync-eastamerica"
+                    do
+                        test -f "${UPDATE_CENTER_FILESHARES_ENV_FILES}/.env-${bucket}"
+
+                        # Don't print any command to avoid exposing credentials
+                        set +x
+
+                        # Pipeline usually uses '/bin/sh' so no 'source' shell keyword available
+                        . "${UPDATE_CENTER_FILESHARES_ENV_FILES}/.env-${bucket}"
+
+                        # Required variables that should now be set from the .env file
+                        : "${BUCKET_NAME?}" "${BUCKET_ENDPOINT_URL?}" "${AWS_ACCESS_KEY_ID?}" "${AWS_SECRET_ACCESS_KEY?}" "${AWS_DEFAULT_REGION?}"
+
+                        # It's now safe
+                        set -x
+
+                        ## Note: AWS CLI are configured through environment variables (from Jenkins credentials) - https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
+                        aws s3 sync ./updates/ s3://"${BUCKET_NAME}"/updates/ \
+                            --delete `# important: use relative path for destination otherwise you will delete update_center2 data from the bucket root` \
+                            --no-progress \
+                            --no-follow-symlinks \
+                            --size-only \
+                            --exclude '.svn' \
+                            --endpoint-url "${BUCKET_ENDPOINT_URL}"
+                    done
                     '''
                 }
             }
