@@ -20,35 +20,24 @@ node('linux') {
     }
 
     withEnv([
-            "PATH+GROOVY=${tool 'groovy'}/bin",
-            "PATH+MVN=${tool 'mvn'}/bin",
-            "JAVA_HOME=${tool 'jdk17'}",
-            "PATH+JAVA=${tool 'jdk17'}/bin"
+        "PATH+GROOVY=${tool 'groovy'}/bin",
+        "PATH+MVN=${tool 'mvn'}/bin",
+        "JAVA_HOME=${tool 'jdk17'}",
+        "PATH+JAVA=${tool 'jdk17'}/bin"
     ]) {
         stage('Build') {
             sh 'mvn -e clean install'
         }
 
         stage('Generate') {
-            String command = '''
-                for f in *.groovy
-                do
-                    echo "= Crawler '$f':"
-                    groovy -Dgrape.config=./grapeConfig.xml ./lib/runner.groovy $f || true
-                done
-            '''
-
             timestamps {
                 if (infra.isTrusted()) {
                     withCredentials([[$class: 'ZipFileBinding', credentialsId: 'update-center-signing', variable: 'SECRET']]) {
-                        sh """
-                            export JENKINS_SIGNER="-key \"$SECRET/update-center.key\" -certificate \"$SECRET/update-center.cert\" -root-certificate \"$SECRET/jenkins-update-center-root-ca.crt\"";
-                            ${command}
-                        """
+                        sh 'bash ./.jenkins-scripts/generate.sh'
                     }
                 }
                 else {
-                    sh command
+                    sh 'bash ./.jenkins-scripts/generate.sh'
                 }
             }
         }
