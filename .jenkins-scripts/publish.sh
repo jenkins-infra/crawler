@@ -37,10 +37,10 @@ do
     ## Source: https://github.com/jenkins-infra/pipeline-library/blob/master/resources/get-fileshare-signed-url.sh
     fileShareBaseUrl="$(get-fileshare-signed-url.sh)"
 
-    # Append the '$FILESHARE_SYNC_DEST_URI' AND '/updates/' paths on the URI of the generated URL
+    # Append the '$FILESHARE_SYNC_DEST_URI' (which must ends with a slash) AND '/updates/' paths on the URI of the generated URL
     # But the URL has a query string so we need a text transformation
     # shellcheck disable=SC2001 # The shell internal search and replace would be tedious due to escapings, hence keeping sed
-    fileShareForCrawler="$(echo "${fileShareBaseUrl}" | sed "s#/?#${FILESHARE_SYNC_DEST_URI}/updates/?#")"
+    fileShareForCrawler="$(echo "${fileShareBaseUrl}" | sed "s#/?#${FILESHARE_SYNC_DEST_URI}updates/?#")"
 
     # Fail fast if no share URL can be generated
     : "${fileShareForCrawler?}"
