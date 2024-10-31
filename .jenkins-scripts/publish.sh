@@ -83,7 +83,6 @@ do
         --delete `# important: use relative path for destination otherwise you will delete update_center2 data from the bucket root` \
         --no-progress \
         --no-follow-symlinks \
-        --size-only \
         --exclude '.svn' \
         --endpoint-url "${BUCKET_ENDPOINT_URL}"
 done
