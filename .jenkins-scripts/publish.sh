@@ -82,14 +82,8 @@ do
     set -x
 
     ## Note: AWS CLI are configured through environment variables (from Jenkins credentials) - https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
-    # First run is to only copy files (overriding them if needed) - https://github.com/aws/aws-cli/issues/1417#issuecomment-121555682
+    # Do NOT delete files as part of the 'sync' command (aws s3 sync tends to randomly delete after uploading - https://github.com/jenkins-infra/helpdesk/issues/4403)
     aws s3 sync ./updates/ s3://"${BUCKET_NAME}"/updates/ \
-        --no-progress \
-        --no-follow-symlinks \
-        --endpoint-url "${BUCKET_ENDPOINT_URL}"
-    # Second run is only to delete files absent from the source - https://github.com/aws/aws-cli/issues/1417#issuecomment-121555682
-    aws s3 sync ./updates/ s3://"${BUCKET_NAME}"/updates/ \
-        --delete `# important: use relative path for destination otherwise you will delete update_center2 data from the bucket root` \
         --no-progress \
         --no-follow-symlinks \
         --endpoint-url "${BUCKET_ENDPOINT_URL}"
