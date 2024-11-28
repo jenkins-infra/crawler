@@ -1,5 +1,6 @@
 #!/bin/bash
 # .jenkins-scripts/publish.sh: execute publication of crawler generated metadatas to the different Update Center sync targets
+# NOTE: NEVER delete any remote files
 # TODO: find a way to reuse 'SYNC_UC_TASKS' from https://github.com/jenkins-infra/update-center2/blob/master/site/publish.sh#L9 to avoid repetition and automate delivery.
 
 set -eux -o pipefail
