@@ -1,5 +1,6 @@
 #!/bin/bash
 # .jenkins-scripts/publish.sh: execute publication of crawler generated metadatas to the different Update Center sync targets
+# NOTE: NEVER delete any remote files
 # TODO: find a way to reuse 'SYNC_UC_TASKS' from https://github.com/jenkins-infra/update-center2/blob/master/site/publish.sh#L9 to avoid repetition and automate delivery.
 
 set -eux -o pipefail
@@ -9,51 +10,27 @@ mkdir -p updates
 cp target/*.json target/*.html updates
 
 # Rsync sync tasks
-# shellcheck source=/dev/null
-source "${UPDATE_CENTER_FILESHARES_ENV_FILES}/.env-rsync-updates.jenkins.io"
+rsync_publish_tasks=("rsync-updates.jenkins.io" "rsync-updates.jenkins.io-data-content" "rsync-updates.jenkins.io-data-redirections-unsecured" "rsync-updates.jenkins.io-data-redirections-secured")
 
-# Required variables that should now be set from the .env file
-: "${RSYNC_HOST?}" "${RSYNC_USER?}" "${RSYNC_GROUP?}" "${RSYNC_REMOTE_DIR?}" "${RSYNC_IDENTITY_NAME?}"
-
-rsync -rlptDvz -e "ssh -o StrictHostKeyChecking=no -i ${UPDATE_CENTER_FILESHARES_ENV_FILES}/${RSYNC_IDENTITY_NAME}" --exclude=.svn --chown="${RSYNC_USER}":"${RSYNC_GROUP}" ./updates/ "${RSYNC_USER}"@"${RSYNC_HOST}":"${RSYNC_REMOTE_DIR}"/updates/
-
-## Azure Buckets sync tasks
-sync_azsync_tasks=("azsync-content" "azsync-redirections-unsecured" "azsync-redirections-secured")
-
-for az_bucket in "${sync_azsync_tasks[@]}"
+for rsync_publish_task in "${rsync_publish_tasks[@]}"
 do
-    # Don't print any command to avoid exposing credentials
-    set +x
+    envToLoad="${UPDATE_CENTER_FILESHARES_ENV_FILES}/.env-${rsync_publish_task}"
 
-    envToLoad="${UPDATE_CENTER_FILESHARES_ENV_FILES}/.env-${az_bucket}"
     test -f "${envToLoad}"
 
     # shellcheck source=/dev/null
     source "${envToLoad}"
+
     # Required variables that should now be set from the .env file
-    : "${STORAGE_NAME?}" "${STORAGE_FILESHARE?}" "${STORAGE_DURATION_IN_MINUTE?}" "${STORAGE_PERMISSIONS?}" "${JENKINS_INFRA_FILESHARE_CLIENT_ID?}" "${JENKINS_INFRA_FILESHARE_CLIENT_SECRET?}" "${JENKINS_INFRA_FILESHARE_TENANT_ID?}" "${FILESHARE_SYNC_DEST_URI?}"
+    : "${RSYNC_HOST?}" "${RSYNC_USER?}" "${RSYNC_GROUP?}" "${RSYNC_REMOTE_DIR?}" "${RSYNC_IDENTITY_NAME?}"
 
-    ## 'get-fileshare-signed-url.sh' command is a script stored in /usr/local/bin used to generate a signed file share URL with a short-lived SAS token
-    ## Source: https://github.com/jenkins-infra/pipeline-library/blob/master/resources/get-fileshare-signed-url.sh
-    fileShareBaseUrl="$(get-fileshare-signed-url.sh)"
-
-    # Append the '$FILESHARE_SYNC_DEST_URI' (which must ends with a slash) AND '/updates/' paths on the URI of the generated URL
-    # But the URL has a query string so we need a text transformation
-    # shellcheck disable=SC2001 # The shell internal search and replace would be tedious due to escapings, hence keeping sed
-    fileShareForCrawler="$(echo "${fileShareBaseUrl}" | sed "s#/?#${FILESHARE_SYNC_DEST_URI}updates/?#")"
-
-    # Fail fast if no share URL can be generated
-    : "${fileShareForCrawler?}"
-
-    # It's now safe
-    set -x
-
-    azcopy sync \
-        --skip-version-check `# Do not check for new azcopy versions (we have updatecli for this)` \
-        --exclude-path '.svn' \
-        --recursive=true \
-        --delete-destination=true `# important: use relative path for destination otherwise you will delete update_center2 data from the bucket root` \
-        ./updates/ "${fileShareForCrawler}"
+    ## TODO: retrieve SSH known_hosts file from a credential to avoid StrictHostKeyChecking=no (context: ephemeral VMs)
+    time rsync --recursive --links --perms --times -D \
+        --chown="${RSYNC_USER}":"${RSYNC_GROUP}" \
+        --checksum --verbose --compress \
+        --rsh="ssh -o StrictHostKeyChecking=no -i ${UPDATE_CENTER_FILESHARES_ENV_FILES}/${RSYNC_IDENTITY_NAME}" `# rsync identity file is stored with .env files` \
+        --exclude=.svn `# TODO: still needed?` \
+        ./updates/ "${RSYNC_USER}"@"${RSYNC_HOST}":"${RSYNC_REMOTE_DIR}"/updates/
 done
 
 # Cloudflare R2 (uses AWS S3 protocol) sync tasks
