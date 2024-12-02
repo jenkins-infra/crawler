@@ -2,15 +2,29 @@
 // Generates index for scriptler scripts
 import net.sf.json.*
 
+def repository = 'https://github.com/jenkinsci/jenkins-scripts'
+def branch = 'main'
+
 def json = [];
 
 def dir = new File("./jenkins-scripts");
 
+void git(File workingDir, String... commands) {
+    commands.each { cmd ->
+        def fullCommand = "git -C $workingDir.canonicalPath $cmd"
+        print "Executing \"${fullCommand}\"..."
+        fullCommand.execute().waitFor()
+        println ' done'
+    }
+}
+
 if (dir.isDirectory() && new File(dir, ".git").isDirectory()) {
-    "git pull --rebase origin master".execute([], dir).waitFor()
+    git dir,
+        "fetch origin $branch",
+        "checkout origin/$branch"
 } else {
-     dir.mkdirs()
-    "git clone https://github.com/jenkinsci/jenkins-scripts -b master".execute().waitFor()
+    dir.mkdirs()
+    git dir, "clone $repository . -b $branch"
 }
 
 def scriptlerDir = new File(dir, "scriptler")
