@@ -33,6 +33,21 @@ do
         ./updates/ "${RSYNC_USER}"@"${RSYNC_HOST}":"${RSYNC_REMOTE_DIR}"/updates/
 done
 
+# Uses a pinned version of AWS S3 2.22.x until Cloudflare R2 fixes their problem - https://github.com/jenkins-infra/helpdesk/issues/4500
+awscli_version="2.22.35"
+archive_path="$(mktemp)"
+archive_extract_dir="$(mktemp -d)"
+bin_dir="${HOME}/.bin"
+install_dir="${HOME}/.aws-cli"
+download_url="https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m)-${awscli_version}.zip"
+curl --silent --location --show-error "${download_url}" --output "${archive_path}"
+unzip "${archive_path}" -d "${archive_extract_dir}"
+bash "${archive_extract_dir}/aws/install" --install-dir "${install_dir}" --bin-dir "${bin_dir}"
+PATH="${bin_dir}":"${PATH}"
+export PATH
+echo "== Path Bin Check:"
+aws --version
+
 # Cloudflare R2 (uses AWS S3 protocol) sync tasks
 export AWS_DEFAULT_REGION=auto
 # Cloudflare R2 does not support more than 2 concurent requests - https://community.cloudflare.com/t/is-it-actually-possible-to-upload-to-r2-buckets-using-wrangler/388762/7
