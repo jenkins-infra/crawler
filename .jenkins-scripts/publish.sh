@@ -35,6 +35,10 @@ done
 
 # Cloudflare R2 (uses AWS S3 protocol) sync tasks
 export AWS_DEFAULT_REGION=auto
+
+# sanity check for build observability
+aws --version
+
 # Cloudflare R2 does not support more than 2 concurent requests - https://community.cloudflare.com/t/is-it-actually-possible-to-upload-to-r2-buckets-using-wrangler/388762/7
 aws configure set default.s3.max_concurrent_requests 2
 aws configure set default.s3.multipart_threshold "50MB"
