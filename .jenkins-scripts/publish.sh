@@ -10,7 +10,7 @@ mkdir -p updates
 cp target/*.json target/*.html updates
 
 # Rsync sync tasks
-rsync_publish_tasks=("rsync-updates.jenkins.io" "rsync-archives.jenkins.io" "rsync-updates.jenkins.io-data-content" "rsync-updates.jenkins.io-data-redirections-unsecured" "rsync-updates.jenkins.io-data-redirections-secured")
+rsync_publish_tasks=("rsync-archives.jenkins.io" "rsync-updates.jenkins.io-data-content" "rsync-updates.jenkins.io-data-redirections-unsecured" "rsync-updates.jenkins.io-data-redirections-secured")
 
 for rsync_publish_task in "${rsync_publish_tasks[@]}"
 do
