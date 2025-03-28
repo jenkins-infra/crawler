@@ -5,7 +5,7 @@ import hudson.util.VersionNumber
 import net.sf.json.*
 
 def listFromGithub(int page) {
-    def url = ("https://api.github.com/repos/jeremylong/dependencycheck/releases?per_page=50&page=" + page).toURL()
+    def url = ("https://api.github.com/repos/dependency-check/dependencycheck/releases?per_page=50&page=" + page).toURL()
     def releases = JSONArray.fromObject(url.text)
 
     releases.collect {
@@ -13,7 +13,7 @@ def listFromGithub(int page) {
             def version = release["tag_name"].substring(1)
             ["id": version,
              "name": "dependency-check ${version}".toString(),
-             "url": "https://github.com/jeremylong/DependencyCheck/releases/download/v${version}/dependency-check-${version}-release.zip".toString()]
+             "url": "https://github.com/dependency-check/DependencyCheck/releases/download/v${version}/dependency-check-${version}-release.zip".toString()]
     }
 }
 
