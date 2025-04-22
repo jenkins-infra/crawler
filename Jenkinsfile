@@ -20,35 +20,24 @@ node('linux') {
     }
 
     withEnv([
-            "PATH+GROOVY=${tool 'groovy'}/bin",
-            "PATH+MVN=${tool 'mvn'}/bin",
-            "JAVA_HOME=${tool 'jdk17'}",
-            "PATH+JAVA=${tool 'jdk17'}/bin"
+        "PATH+GROOVY=${tool 'groovy'}/bin",
+        "PATH+MVN=${tool 'mvn'}/bin",
+        "JAVA_HOME=${tool 'jdk17'}",
+        "PATH+JAVA=${tool 'jdk17'}/bin"
     ]) {
         stage('Build') {
             sh 'mvn -e clean install'
         }
 
         stage('Generate') {
-            String command = '''
-                for f in *.groovy
-                do
-                    echo "= Crawler '$f':"
-                    groovy -Dgrape.config=./grapeConfig.xml ./lib/runner.groovy $f || true
-                done
-            '''
-
             timestamps {
                 if (infra.isTrusted()) {
                     withCredentials([[$class: 'ZipFileBinding', credentialsId: 'update-center-signing', variable: 'SECRET']]) {
-                        sh """
-                            export JENKINS_SIGNER="-key \"$SECRET/update-center.key\" -certificate \"$SECRET/update-center.cert\" -root-certificate \"$SECRET/jenkins-update-center-root-ca.crt\"";
-                            ${command}
-                        """
+                        sh 'bash ./.jenkins-scripts/generate.sh'
                     }
                 }
                 else {
-                    sh command
+                    sh 'bash ./.jenkins-scripts/generate.sh'
                 }
             }
         }
@@ -62,53 +51,8 @@ node('linux') {
 
     if (infra.isTrusted()) {
         stage('Publish') {
-            sh '''
-                mkdir -p updates
-                cp target/*.json target/*.html updates
-            '''
-            sshagent(['updates-rsync-key']) {
-                sh 'rsync -rlptDvz -e \'ssh -o StrictHostKeyChecking=no\' --exclude=.svn --chown=mirrorbrain:www-data updates/ mirrorbrain@updates.jenkins.io:/var/www/updates.jenkins.io/updates/'
-            }
-            withCredentials([
-                azureServicePrincipal(
-                    credentialsId: 'trusted_ci_jenkins_io_fileshare_serviceprincipal_writer',
-                    clientIdVariable : 'JENKINS_INFRA_FILESHARE_CLIENT_ID',
-                    clientSecretVariable : 'JENKINS_INFRA_FILESHARE_CLIENT_SECRET',
-                    tenantIdVariable : 'JENKINS_INFRA_FILESHARE_TENANT_ID' 
-                ),
-                string(credentialsId: 'aws-access-key-id-updatesjenkinsio', variable: 'AWS_ACCESS_KEY_ID'),
-                string(credentialsId: 'aws-secret-access-key-updatesjenkinsio', variable: 'AWS_SECRET_ACCESS_KEY')
-            ]) {
-                withEnv([
-                    'AWS_DEFAULT_REGION=auto',
-                    'UPDATES_R2_BUCKETS=westeurope-updates-jenkins-io',
-                    'UPDATES_R2_ENDPOINT=https://8d1838a43923148c5cee18ccc356a594.r2.cloudflarestorage.com',
-                    'STORAGE_FILESHARE=updates-jenkins-io',
-                    'STORAGE_NAME=updatesjenkinsio',
-                    'STORAGE_DURATION_IN_MINUTE=5',
-                    'STORAGE_PERMISSIONS=dlrw'
-                ]) {
-                    sh '''
-                    # Don't print any command
-                    set +x
-
-                    # Source of this script: https://github.com/jenkins-infra/pipeline-library/tree/master/resources/get-fileshare-signed-url.sh
-                    fileShareSignedUrl=$(get-fileshare-signed-url.sh)
-                    azcopy sync \
-                        --skip-version-check \
-                        --exclude-path '.svn' \
-                        --recursive=true \
-                        ./updates/ "${fileShareSignedUrl}"
-
-                    ## Note: AWS CLI are configured through environment variables (from Jenkins credentials) - https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
-                    aws s3 sync ./updates/ s3://"${UPDATES_R2_BUCKETS}"/updates/ \
-                        --no-progress \
-                        --no-follow-symlinks \
-                        --size-only \
-                        --exclude '.svn' \
-                        --endpoint-url "${UPDATES_R2_ENDPOINT}"
-                    '''
-                }
+            withCredentials([[$class: 'ZipFileBinding', credentialsId: 'update-center-publish-env', variable: 'UPDATE_CENTER_FILESHARES_ENV_FILES']]) {
+                sh 'bash ./.jenkins-scripts/publish.sh'
             }
         }
     }
