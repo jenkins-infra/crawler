@@ -2,7 +2,6 @@
 // Generates server-side metadata for chromedriver auto-installation
 import net.sf.json.JSONObject
 import groovy.json.JsonSlurper
-import groovy.json.JsonOutput
 
 def url = 'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json'
 def jsonString = new URL(url).text
@@ -14,7 +13,7 @@ def jsonList = []
 def stableData = jsonData.channels.Stable
 def chromeDriverData = stableData.downloads.chromedriver
 chromeDriverData.each { entry ->
-    def id = "${entry.platform}_${stableData.version}"
+    def id = "${entry.platform}_${stableData.version}".toString()
     def entry_url = entry.url
     jsonList << ["id": id, "url": entry_url]
 }
