@@ -9,7 +9,6 @@ def jsonData = new JsonSlurper().parseText(jsonString)
 
 def jsonList = []
 
-// Extract information only for the "Stable" channel
 jsonData.milestones.each { milestone ->
     def milestoneData = milestone.value
 
