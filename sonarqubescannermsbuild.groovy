@@ -11,7 +11,7 @@ for (JSONObject release : releases) {
   def tagName = release.get("tag_name")
   if (!release.get("draft") && !release.get("prerelease") && !tagName.toLowerCase().contains("vsts")) {
 
-    if (tagName.startsWith("1") || tagName.equals("2.0") || tagName.equals("2.1")) {
+    if (tagName.startsWith("1.") || tagName.equals("2.0") || tagName.equals("2.1")) {
        json << ["id": tagName,
               "name": "SonarScanner for MSBuild ${tagName}".toString(),
               "url": "https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/${tagName}/MSBuild.SonarQube.Runner-${tagName}.zip".toString()];
