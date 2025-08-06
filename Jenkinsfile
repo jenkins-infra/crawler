@@ -13,7 +13,7 @@ if (infra.isTrusted()) {
 
 properties(p)
 
-node('linux') {
+node('maven-17') {
     stage ('Prepare') {
         deleteDir()
         checkout scm
@@ -21,11 +21,9 @@ node('linux') {
 
     withEnv([
         "PATH+GROOVY=${tool 'groovy'}/bin",
-        "PATH+MVN=${tool 'mvn'}/bin",
-        "JAVA_HOME=${tool 'jdk17'}",
-        "PATH+JAVA=${tool 'jdk17'}/bin"
     ]) {
         stage('Build') {
+            sh 'mvn -v'
             sh 'mvn -e clean install'
         }
 
@@ -47,10 +45,16 @@ node('linux') {
         dir ('target') {
             archiveArtifacts '**'
         }
+        if (infra.isTrusted()) {
+            stash includes: 'target/**', name: 'target'
+        }
     }
+}
 
-    if (infra.isTrusted()) {
+if (infra.isTrusted()) {
+    node('updatecenter') {
         stage('Publish') {
+            unstash 'target'
             withCredentials([[$class: 'ZipFileBinding', credentialsId: 'update-center-publish-env', variable: 'UPDATE_CENTER_FILESHARES_ENV_FILES']]) {
                 sh 'bash ./.jenkins-scripts/publish.sh'
             }
