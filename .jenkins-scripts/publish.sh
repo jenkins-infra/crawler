@@ -10,7 +10,7 @@ mkdir -p updates
 cp target/*.json target/*.html updates
 
 # Rsync sync tasks
-rsync_publish_tasks=("rsync-archives.jenkins.io" "rsync-updates.jenkins.io-data-content" "rsync-updates.jenkins.io-data-redirections")
+rsync_publish_tasks=("rsync-archives.jenkins.io")
 
 for rsync_publish_task in "${rsync_publish_tasks[@]}"
 do
@@ -24,13 +24,33 @@ do
     # Required variables that should now be set from the .env file
     : "${RSYNC_HOST?}" "${RSYNC_USER?}" "${RSYNC_GROUP?}" "${RSYNC_REMOTE_DIR?}" "${RSYNC_IDENTITY_NAME?}"
 
-    ## TODO: retrieve SSH known_hosts file from a credential to avoid StrictHostKeyChecking=no (context: ephemeral VMs)
     time rsync --recursive --links --perms --times -D \
         --chown="${RSYNC_USER}":"${RSYNC_GROUP}" \
         --checksum --verbose --compress \
-        --rsh="ssh -o StrictHostKeyChecking=no -i ${UPDATE_CENTER_FILESHARES_ENV_FILES}/${RSYNC_IDENTITY_NAME}" `# rsync identity file is stored with .env files` \
+        --rsh="ssh -i ${UPDATE_CENTER_FILESHARES_ENV_FILES}/${RSYNC_IDENTITY_NAME}" `# rsync identity file is stored with .env files` \
         --exclude=.svn `# TODO: still needed?` \
         ./updates/ "${RSYNC_USER}"@"${RSYNC_HOST}":"${RSYNC_REMOTE_DIR}"/updates/
+done
+
+# Local Rsync sync tasks
+localrsync_publish_tasks=("localrsync-updates.jenkins.io-content" "localrsync-updates.jenkins.io-redirections")
+
+for localrsync_publish_task in "${localrsync_publish_tasks[@]}"
+do
+    envToLoad="${UPDATE_CENTER_FILESHARES_ENV_FILES}/.env-${localrsync_publish_task}"
+
+    test -f "${envToLoad}"
+
+    # shellcheck source=/dev/null
+    source "${envToLoad}"
+
+    # Required variables that should now be set from the .env file
+    : "${RSYNC_REMOTE_DIR?}"
+
+    time rsync --recursive --links --times -D \
+        --checksum --verbose \
+        --exclude=.svn `# TODO: still needed?` \
+        ./updates/ "${RSYNC_REMOTE_DIR}"/updates/
 done
 
 # Cloudflare R2 (uses AWS S3 protocol) sync tasks
