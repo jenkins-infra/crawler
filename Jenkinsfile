@@ -47,6 +47,7 @@ node('maven-17') {
         }
         if (infra.isTrusted()) {
             stash includes: 'target/**', name: 'target'
+            stash includes: '.jenkins-scripts/**', name: 'scripts'
         }
     }
 }
@@ -55,6 +56,7 @@ if (infra.isTrusted()) {
     node('updatecenter') {
         stage('Publish') {
             unstash 'target'
+            unstash 'scripts'
             withCredentials([[$class: 'ZipFileBinding', credentialsId: 'update-center-publish-env', variable: 'UPDATE_CENTER_FILESHARES_ENV_FILES']]) {
                 sh 'bash ./.jenkins-scripts/publish.sh'
             }
