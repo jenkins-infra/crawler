@@ -24,9 +24,9 @@ def listFromMavenRepo() {
 
     p.getAnchors().collect {
         HtmlAnchor a ->
-        m = pattern.matcher(a.hrefAttribute)
+        def m = pattern.matcher(a.hrefAttribute)
         if (m.find()) {
-            ver = m.group(1)
+            def ver = m.group(1)
             if (!ver.contains("RC") && urlReturns200(getGithubArtifactUrl(ver))) {
                 versions.addAll(ver)
             }
