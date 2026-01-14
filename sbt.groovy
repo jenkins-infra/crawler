@@ -49,7 +49,7 @@ boolean urlReturns200(String urlString, int timeoutMillis = 10000) {
     try {
         URL url = new URL(urlString)
         connection = (HttpURLConnection) url.openConnection()
-        connection.setRequestMethod("GET")
+        connection.setRequestMethod("HEAD")
         connection.setConnectTimeout(timeoutMillis)
         connection.setReadTimeout(timeoutMillis)
         connection.setInstanceFollowRedirects(true)
