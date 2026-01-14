@@ -28,7 +28,7 @@ def listFromMavenRepo() {
         if (m.find()) {
             def ver = m.group(1)
             if (!ver.contains("RC") && urlReturns200(getGithubArtifactUrl(ver))) {
-                versions.addAll(ver)
+                versions.add(ver)
             }
         }
     }
