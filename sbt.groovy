@@ -2,8 +2,6 @@
 // Generates server-side metadata for sbt-launch auto-installation
 import org.htmlunit.html.*;
 import org.htmlunit.WebClient
-import org.htmlunit.html.HtmlAnchor
-import org.htmlunit.html.HtmlPage
 import org.htmlunit.xml.XmlPage
 import hudson.util.VersionNumber
 import java.net.HttpURLConnection
