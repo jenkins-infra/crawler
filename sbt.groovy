@@ -4,20 +4,32 @@ import org.htmlunit.html.*;
 import org.htmlunit.WebClient
 import org.htmlunit.xml.XmlPage
 import hudson.util.VersionNumber
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.regex.Pattern
 import net.sf.json.*
 
-def listFromMaven() {
-    String baseUrl = 'https://repo1.maven.org/maven2/org/scala-sbt/sbt'
-    URL metaUrl = new URL("$baseUrl/maven-metadata.xml")
+def listFromMavenRepo() {
+    def versions = []
+    def url = "https://repo1.maven.org/maven2/org/scala-sbt/sbt/";
 
-    WebClient wc = new WebClient()
-    XmlPage meta = wc.getPage(metaUrl)
+    def wc = new WebClient();
+    wc.setCssErrorHandler(new org.htmlunit.SilentCssErrorHandler());
+    wc.getOptions().setThrowExceptionOnScriptError(false);
+    wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+    HtmlPage p = wc.getPage(url);
+    def pattern = Pattern.compile("^([0-9]+.*)/\$");
 
-    List<String> versions = meta.getByXPath("//metadata/versioning/versions/version")
-            .collect() { DomElement e -> e.getTextContent() }
-            .findAll() { e -> !e.contains('RC') }
-            .reverse()
-
+    p.getAnchors().each {
+        HtmlAnchor a ->
+        def m = pattern.matcher(a.hrefAttribute)
+        if (m.find()) {
+            def ver = m.group(1)
+            if (!ver.contains("RC") && urlReturns200(getGithubArtifactUrl(ver))) {
+                versions.add(ver)
+            }
+        }
+    }
     return versions.collect() { version ->
         return ["id"  : version,
                 "name": version,
@@ -30,9 +42,30 @@ def getGithubArtifactUrl(String version) {
     return String.format("https://github.com/sbt/sbt/releases/download/v%s/sbt-%s.zip", version, version)
 }
 
+boolean urlReturns200(String urlString, int timeoutMillis = 10000) {
+    HttpURLConnection connection = null
+    try {
+        URL url = new URL(urlString)
+        connection = (HttpURLConnection) url.openConnection()
+        connection.setRequestMethod("HEAD")
+        connection.setConnectTimeout(timeoutMillis)
+        connection.setReadTimeout(timeoutMillis)
+        connection.setInstanceFollowRedirects(true)
+
+        int responseCode = connection.getResponseCode()
+        return responseCode == 200
+    } catch (Exception e) {
+        return false
+    } finally {
+        if (connection != null) {
+            connection.disconnect()
+        }
+    }
+}
+
 def listAll() {
     List versions = new ArrayList()
-    versions.addAll(listFromMaven())
+    versions.addAll(listFromMavenRepo())
 
     return versions
             .findAll { it != null }
