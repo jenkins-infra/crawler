@@ -2,6 +2,7 @@
 // generate metadata for recipes
 import net.sf.json.*
 import java.util.zip.*
+import groovy.xml.XmlSlurper
 
 def branch = "inbound";
 
