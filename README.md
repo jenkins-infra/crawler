@@ -1,6 +1,6 @@
 # Infra Backend Crawlers
 
-These scripts generate machine readable tool installer metadata.
+These scripts generate machine readable [tool installer metadata](https://updates.jenkins.io/updates/) that is published to the [Jenkins update center](https://updates.jenkins.io/) in a [folder](https://updates.jenkins.io/updates/).
 You need Groovy 2.0 or later to run them.
 You can add new one by doing monkey-see monkey-do. Any one of these scripts
 are individually runnable, for example:
