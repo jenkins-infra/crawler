@@ -9,9 +9,12 @@ then
   export JENKINS_SIGNER="-key \"$SECRET/update-center.key\" -certificate \"$SECRET/update-center.cert\" -root-certificate \"$SECRET/jenkins-update-center-root-ca.crt\""
 fi
 
-for f in *.groovy
+for f in [a-z]*.groovy
 do
     echo "= Crawler '$f':"
     groovy -Dgrape.config=./grapeConfig.xml ./lib/runner.groovy "$f" \
-      || true # Do not fail immediatly
+      || true # Hide failures and allow all generators to run
 done
+
+# Run a sanity test of the outputs
+groovy ZenithTest.groovy
