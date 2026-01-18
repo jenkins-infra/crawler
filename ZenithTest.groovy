@@ -12,8 +12,7 @@ import org.junit.Test;
  */
 class ZenithTest {
 
-    void checkFileSize(String fileName) {
-        long minimumSize = 500;
+    void checkFileSize(long minimumSize, String fileName) {
         File dataFile = new File("target/" + fileName);
         assertTrue("File target/" + fileName + " does not exist", dataFile.exists());
 
@@ -26,7 +25,7 @@ class ZenithTest {
 
     @Test
     void adoptopenjdk() {
-        checkFileSize("io.jenkins.plugins.adoptopenjdk.AdoptOpenJDKInstaller.json");
+        checkFileSize(300_000L, "io.jenkins.plugins.adoptopenjdk.AdoptOpenJDKInstaller.json");
     }
 
     // TODO: Enable after first run that provides non-empty data for Allure command line installer
@@ -38,72 +37,72 @@ class ZenithTest {
 
     @Test
     void ant() {
-        checkFileSize("hudson.tasks.Ant.AntInstaller.json");
+        checkFileSize(4_000L, "hudson.tasks.Ant.AntInstaller.json");
     }
 
     @Test
     void buckminster() {
-        checkFileSize("hudson.plugins.buckminster.BuckminsterInstallation.BuckminsterInstaller.json");
+        checkFileSize(4_000L, "hudson.plugins.buckminster.BuckminsterInstallation.BuckminsterInstaller.json");
     }
 
     @Test
     void chromedriver() {
-        checkFileSize("org.jenkins-ci.plugins.chromedriver.ChromeDriver.json");
+        checkFileSize(10_000L, "org.jenkins-ci.plugins.chromedriver.ChromeDriver.json");
     }
 
     @Test
     void cmake() {
-        checkFileSize("hudson.plugins.cmake.CmakeInstaller.json");
+        checkFileSize(200_000L, "hudson.plugins.cmake.CmakeInstaller.json");
     }
 
     @Test
     void codeql() {
-        checkFileSize("io.jenkins.plugins.codeql.CodeQLInstaller.json");
+        checkFileSize(400L, "io.jenkins.plugins.codeql.CodeQLInstaller.json");
     }
 
     @Test
     void consul() {
-        checkFileSize("com.inneractive.jenkins.plugins.consul.ConsulInstaller.json");
+        checkFileSize(400_000L, "com.inneractive.jenkins.plugins.consul.ConsulInstaller.json");
     }
 
     @Test
     void dependencycheck() {
-        checkFileSize("org.jenkinsci.plugins.DependencyCheck.tools.DependencyCheckInstaller.json");
+        checkFileSize(15_000L, "org.jenkinsci.plugins.DependencyCheck.tools.DependencyCheckInstaller.json");
     }
 
     @Test
     void dotnetSdk() {
-        checkFileSize("io.jenkins.plugins.dotnet.data.Downloads.json");
+        checkFileSize(90_000L, "io.jenkins.plugins.dotnet.data.Downloads.json");
     }
 
     @Test
     void flyway() {
-        checkFileSize("sp.sd.flywayrunner.installation.FlywayInstaller.json");
+        checkFileSize(15_000L, "sp.sd.flywayrunner.installation.FlywayInstaller.json");
     }
 
     @Test
     void golang() {
-        checkFileSize("org.jenkinsci.plugins.golang.GolangInstaller.json");
+        checkFileSize(600_000L, "org.jenkinsci.plugins.golang.GolangInstaller.json");
     }
 
     @Test
     void gradle() {
-        checkFileSize("hudson.plugins.gradle.GradleInstaller.json");
+        checkFileSize(60_000L, "hudson.plugins.gradle.GradleInstaller.json");
     }
 
     @Test
     void grails() {
-        checkFileSize("com.g2one.hudson.grails.GrailsInstaller.json");
+        checkFileSize(24_000L, "com.g2one.hudson.grails.GrailsInstaller.json");
     }
 
     @Test
     void groovy() {
-        checkFileSize("hudson.plugins.groovy.GroovyInstaller.json");
+        checkFileSize(20_000L, "hudson.plugins.groovy.GroovyInstaller.json");
     }
 
     @Test
     void jdk() {
-        checkFileSize("hudson.tools.JDKInstaller.json");
+        checkFileSize(400_000L, "hudson.tools.JDKInstaller.json");
     }
 
     // TODO: Fix the leiningen generator and stop ignoring this test
@@ -115,7 +114,7 @@ class ZenithTest {
 
     @Test
     void maven() {
-        checkFileSize("hudson.tasks.Maven.MavenInstaller.json");
+        checkFileSize(8_000L, "hudson.tasks.Maven.MavenInstaller.json");
     }
 
     // TODO: Fix the mongodb generator and stop ignoring this test
@@ -127,56 +126,56 @@ class ZenithTest {
 
     @Test
     void nodejs() {
-        checkFileSize("hudson.plugins.nodejs.tools.NodeJSInstaller.json");
+        checkFileSize(80_000L, "hudson.plugins.nodejs.tools.NodeJSInstaller.json");
     }
 
     @Test
     void packer() {
-        checkFileSize("biz.neustar.jenkins.plugins.packer.PackerInstaller.json");
+        checkFileSize(300_000L, "biz.neustar.jenkins.plugins.packer.PackerInstaller.json");
     }
 
     @Test
     void play() {
-        checkFileSize("hudson.plugins.play.PlayInstaller.json");
+        checkFileSize(8_000L, "hudson.plugins.play.PlayInstaller.json");
     }
 
     @Test
     void recipe() {
-        checkFileSize("org.jenkinsci.plugins.recipe.RecipeCatalog.json");
+        checkFileSize(2_000L, "org.jenkinsci.plugins.recipe.RecipeCatalog.json");
     }
 
     @Test
     void sbt() {
-        checkFileSize("org.jvnet.hudson.plugins.SbtPluginBuilder.SbtInstaller.json");
+        checkFileSize(10_000L, "org.jvnet.hudson.plugins.SbtPluginBuilder.SbtInstaller.json");
     }
 
     @Test
     void sbuild() {
-        checkFileSize("org.sbuild.jenkins.plugin.SBuildInstaller.json");
+        checkFileSize(2_000L, "org.sbuild.jenkins.plugin.SBuildInstaller.json");
     }
 
     @Test
     void scala() {
-        checkFileSize("hudson.plugins.scala.ScalaInstaller.json");
+        checkFileSize(10_000L, "hudson.plugins.scala.ScalaInstaller.json");
     }
 
     @Test
     void scriptler() {
-        checkFileSize("org.jenkinsci.plugins.scriptler.CentralScriptJsonCatalog.json");
+        checkFileSize(24_000L, "org.jenkinsci.plugins.scriptler.CentralScriptJsonCatalog.json");
     }
 
     @Test
     void sonarqubescanner() {
-        checkFileSize("hudson.plugins.sonar.SonarRunnerInstaller.json");
+        checkFileSize(8_000L, "hudson.plugins.sonar.SonarRunnerInstaller.json");
     }
 
     @Test
     void sonarqubescannermsbuild() {
-        checkFileSize("hudson.plugins.sonar.MsBuildSonarQubeRunnerInstaller.json");
+        checkFileSize(60_000L, "hudson.plugins.sonar.MsBuildSonarQubeRunnerInstaller.json");
     }
 
     @Test
     void terraform() {
-        checkFileSize("org.jenkinsci.plugins.terraform.TerraformInstaller.json");
+        checkFileSize(70_000L, "org.jenkinsci.plugins.terraform.TerraformInstaller.json");
     }
 }
