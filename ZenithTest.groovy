@@ -28,11 +28,9 @@ class ZenithTest {
         checkFileSize(300_000L, "io.jenkins.plugins.adoptopenjdk.AdoptOpenJDKInstaller.json");
     }
 
-    // TODO: Enable after first run that provides non-empty data for Allure command line installer
     @Test
-    @Ignore
     void allure() {
-        checkFileSize("ru.yandex.qatools.allure.jenkins.tools.AllureCommandlineInstaller.json");
+        checkFileSize(10_000L, "ru.yandex.qatools.allure.jenkins.tools.AllureCommandlineInstaller.json");
     }
 
     @Test
