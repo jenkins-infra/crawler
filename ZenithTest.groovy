@@ -109,7 +109,7 @@ class ZenithTest {
     @Test
     @Ignore
     void leiningen() {
-        checkFileSize("org.jenkins-ci.plugins.leiningen.LeinInstaller.json");
+        checkFileSize(80L, "org.jenkins-ci.plugins.leiningen.LeinInstaller.json");
     }
 
     @Test
@@ -121,7 +121,7 @@ class ZenithTest {
     @Test
     @Ignore
     void mongodb() {
-        checkFileSize("org.jenkinsci.plugins.mongodb.MongoDBInstaller.json");
+        checkFileSize(80L, "org.jenkinsci.plugins.mongodb.MongoDBInstaller.json");
     }
 
     @Test
