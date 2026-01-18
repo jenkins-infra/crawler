@@ -1,9 +1,10 @@
 /* Test results of generators */
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import org.junit.jupiter.api.Test;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * Test to be run after all installer metadata has been generated.
@@ -14,12 +15,13 @@ class ZenithTest {
     void checkFileSize(String fileName) {
         long minimumSize = 500;
         File dataFile = new File("target/" + fileName);
-        assertTrue(dataFile.exists(), "File target/" + fileName + " does not exist");
+        assertTrue("File target/" + fileName + " does not exist", dataFile.exists());
 
         long actualSize = dataFile.length();
         assertTrue(
+                "Size of target/" + fileName + " was " + actualSize + ", less than minimum " + minimumSize,
                 actualSize > minimumSize,
-                "Size of target/" + fileName + " was " + actualSize + ", less than minimum " + minimumSize);
+                );
     }
 
     @Test
@@ -27,11 +29,12 @@ class ZenithTest {
         checkFileSize("io.jenkins.plugins.adoptopenjdk.AdoptOpenJDKInstaller.json");
     }
 
-    // TODO: Uncomment after first run that provides non-empty data for Allure command line installer
-    // @Test
-    // void allure() {
-    //     checkFileSize("ru.yandex.qatools.allure.jenkins.tools.AllureCommandlineInstaller.json");
-    // }
+    // TODO: Enable after first run that provides non-empty data for Allure command line installer
+    @Test
+    @Ignore
+    void allure() {
+        checkFileSize("ru.yandex.qatools.allure.jenkins.tools.AllureCommandlineInstaller.json");
+    }
 
     @Test
     void ant() {
@@ -103,22 +106,24 @@ class ZenithTest {
         checkFileSize("hudson.tools.JDKInstaller.json");
     }
 
-    // TODO: Fix the leiningen generator and uncomment this test
-    // @Test
-    // void leiningen() {
-    //     checkFileSize("org.jenkins-ci.plugins.leiningen.LeinInstaller.json");
-    // }
+    // TODO: Fix the leiningen generator and stop ignoring this test
+    @Test
+    @Ignore
+    void leiningen() {
+        checkFileSize("org.jenkins-ci.plugins.leiningen.LeinInstaller.json");
+    }
 
     @Test
     void maven() {
         checkFileSize("hudson.tasks.Maven.MavenInstaller.json");
     }
 
-    // TODO: Fix the mongodb generator and uncomment this test
-    // @Test
-    // void mongodb() {
-    //     checkFileSize("org.jenkinsci.plugins.mongodb.MongoDBInstaller.json");
-    // }
+    // TODO: Fix the mongodb generator and stop ignoring this test
+    @Test
+    @Ignore
+    void mongodb() {
+        checkFileSize("org.jenkinsci.plugins.mongodb.MongoDBInstaller.json");
+    }
 
     @Test
     void nodejs() {
