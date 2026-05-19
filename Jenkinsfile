@@ -23,8 +23,7 @@ node('maven-17') {
         "PATH+GROOVY=${tool 'groovy'}/bin",
     ]) {
         stage('Build') {
-            sh 'mvn -v'
-            sh 'mvn -e clean install'
+            sh 'mvn -V -B -e clean install'
         }
 
         stage('Generate') {
