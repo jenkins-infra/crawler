@@ -60,5 +60,8 @@ if (infra.isTrusted()) {
                 sh 'bash ./.jenkins-scripts/publish.sh'
             }
         }
+        stage ('Publish build report') {
+            publishBuildStatusReport()
+        }
     }
 }
