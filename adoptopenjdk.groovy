@@ -52,6 +52,7 @@ class ListAdoptOpenJDK {
         String openjdk_impl = jvm_impl.toLowerCase()
         JSONObject r = new JSONObject()
         r.put("name", "OpenJDK " + feature_version + " - " + jvm_impl)
+        r.put("feature_version", feature_version)
         Map<String, JSONObject> releasesMap = new LinkedHashMap<>();
         int page = 0
         boolean keepGoing = true
