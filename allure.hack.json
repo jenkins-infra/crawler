@@ -1,5 +1,25 @@
 {"list": [
     {
+    "id": "2.43.0",
+    "name": "2.43.0",
+    "url": "https://repo1.maven.org/maven2/io/qameta/allure/allure-commandline/2.43.0/allure-commandline-2.43.0.zip"
+  },
+    {
+    "id": "2.42.1",
+    "name": "2.42.1",
+    "url": "https://repo1.maven.org/maven2/io/qameta/allure/allure-commandline/2.42.1/allure-commandline-2.42.1.zip"
+  },
+    {
+    "id": "2.42.0",
+    "name": "2.42.0",
+    "url": "https://repo1.maven.org/maven2/io/qameta/allure/allure-commandline/2.42.0/allure-commandline-2.42.0.zip"
+  },
+    {
+    "id": "2.41.0",
+    "name": "2.41.0",
+    "url": "https://repo1.maven.org/maven2/io/qameta/allure/allure-commandline/2.41.0/allure-commandline-2.41.0.zip"
+  },
+    {
     "id": "2.40.0",
     "name": "2.40.0",
     "url": "https://repo1.maven.org/maven2/io/qameta/allure/allure-commandline/2.40.0/allure-commandline-2.40.0.zip"
