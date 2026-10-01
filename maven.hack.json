@@ -1,5 +1,10 @@
 {"list": [
     {
+    "id": "3.10.0",
+    "name": "3.10.0",
+    "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.10.0/apache-maven-3.10.0-bin.zip"
+  },
+    {
     "id": "3.9.16",
     "name": "3.9.16",
     "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.16/apache-maven-3.9.16-bin.zip"
