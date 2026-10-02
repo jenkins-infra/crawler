@@ -6,7 +6,7 @@ List p = [buildDiscarder(logRotator(numToKeepStr: '5'))]
 /* When we're running inside our trusted infrastructure, we want to
  * re-generate the tools meta-data every four hours
  */
-if (infra.isTrusted()) {
+if (infra.isTrustedCiController()) {
     p.add(pipelineTriggers([cron('H */4 * * *')]))
     p.add(disableConcurrentBuilds())
 }
@@ -28,7 +28,7 @@ node('maven-17') {
 
         stage('Generate') {
             timestamps {
-                if (infra.isTrusted()) {
+                if (infra.isTrustedCiController()) {
                     withCredentials([[$class: 'ZipFileBinding', credentialsId: 'update-center-signing', variable: 'SECRET']]) {
                         sh 'bash ./.jenkins-scripts/generate.sh'
                     }
@@ -44,14 +44,14 @@ node('maven-17') {
         dir ('target') {
             archiveArtifacts '**'
         }
-        if (infra.isTrusted()) {
+        if (infra.isTrustedCiController()) {
             stash includes: 'target/**', name: 'target'
             stash includes: '.jenkins-scripts/**', name: 'scripts'
         }
     }
 }
 
-if (infra.isTrusted()) {
+if (infra.isTrustedCiController()) {
     node('updatecenter') {
         stage('Publish') {
             unstash 'target'
