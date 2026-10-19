@@ -1,97 +1,38 @@
 #!./lib/runner.groovy
-// Generates server-side metadata for Sonar Runner
-import org.htmlunit.WebClient
-import org.htmlunit.html.HtmlAnchor
-import org.htmlunit.html.HtmlPage
-import java.util.regex.Pattern
+// Generates server-side metadata for SonarScanner CLI
 import net.sf.json.JSONObject
 import hudson.util.VersionNumber
 
-def listFromOldCodehausURL() {
-    def url = "https://repo1.maven.org/maven2/org/codehaus/sonar-plugins/sonar-runner/";
-    def wc = new WebClient()
-    wc.setCssErrorHandler(new org.htmlunit.SilentCssErrorHandler());
-    wc.getOptions().setJavaScriptEnabled(false);
-    wc.getOptions().setThrowExceptionOnScriptError(false);
-    wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
-    HtmlPage p = wc.getPage(url);
-    def pattern=Pattern.compile("^([0-9][0-9\\.]+)/\$");
-
-    return p.getAnchors().collect { HtmlAnchor a ->
-        m = pattern.matcher(a.hrefAttribute)
-        println(a.hrefAttribute)
-        if(m.find()) {
-            ver=m.group(1)
-            url = p.getFullyQualifiedUrl(a.hrefAttribute + "sonar-runner-" + ver + ".zip");
-            return ["id":ver, "name": "SonarQube Scanner " + ver, "url":url.toExternalForm()]
+def listFromSonarSourceBinaries() {
+    def baseUrl = "https://binaries.sonarsource.com/"
+    def prefix = "Distribution/sonar-scanner-cli/"
+    // Only keep the platform-independent distributions (no JRE embedded)
+    def pattern = ~/^${prefix}sonar-scanner(?:-cli)?-([0-9][0-9\.]*)\.zip$/
+    def result = []
+    def marker = ""
+    def truncated = true
+    while (truncated) {
+        def listUrl = baseUrl + "s3api?prefix=" + URLEncoder.encode(prefix, "UTF-8") + "&delimiter=%2F&marker=" + URLEncoder.encode(marker, "UTF-8")
+        def xml = new XmlSlurper().parseText(new URL(listUrl).text)
+        xml.Contents.each {
+            def key = it.Key.text()
+            def m = pattern.matcher(key)
+            if (m.matches()) {
+                def ver = m.group(1)
+                result << ["id": ver, "name": "SonarQube Scanner " + ver, "url": baseUrl + key]
+            }
+            marker = key
         }
-        return null;
-    }
-}
-
-def listFromNewCodehausUrl() {
-    def url = "https://repo1.maven.org/maven2/org/codehaus/sonar/runner/sonar-runner-dist/";
-    def wc = new WebClient()
-    wc.setCssErrorHandler(new org.htmlunit.SilentCssErrorHandler());
-    wc.getOptions().setJavaScriptEnabled(false);
-    wc.getOptions().setThrowExceptionOnScriptError(false);
-    wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
-    HtmlPage p = wc.getPage(url);
-    def pattern = Pattern.compile("^([0-9][0-9\\.]+)/");
-
-    return p.getAnchors().collect { HtmlAnchor a ->
-        m = pattern.matcher(a.hrefAttribute)
-        println(a.hrefAttribute)
-        if(m.find()) {
-            ver=m.group(1)
-            url = p.getFullyQualifiedUrl(a.hrefAttribute + "sonar-runner-dist-" + ver + ".zip");
-            return ["id":ver, "name": "SonarQube Scanner " + ver, "url":url.toExternalForm()]
+        truncated = xml.IsTruncated.text() == "true"
+        if (xml.NextMarker.text()) {
+            marker = xml.NextMarker.text()
         }
-        return null;
     }
-}
-
-def listFromNewSonarSourceUrl() {
-    def url = "https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/";
-    def wc = new WebClient()
-    wc.setCssErrorHandler(new org.htmlunit.SilentCssErrorHandler());
-    wc.getOptions().setJavaScriptEnabled(false);
-    wc.getOptions().setThrowExceptionOnScriptError(false);
-    wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
-    HtmlPage p = wc.getPage(url);
-    def pattern = Pattern.compile("^([0-9][0-9\\.]+)/");
-
-    return p.getAnchors().collect { HtmlAnchor a ->
-        m = pattern.matcher(a.hrefAttribute)
-        println(a.hrefAttribute)
-        if(m.find()) {
-            ver=m.group(1)
-            url = p.getFullyQualifiedUrl(a.hrefAttribute + "sonar-scanner-cli-" + ver + ".zip");
-            return ["id":ver, "name": "SonarQube Scanner " + ver, "url":url.toExternalForm()]
-        }
-        return null;
-    }
+    return result
 }
 
 def listAll() {
-  return (listFromOldCodehausURL() + listFromNewCodehausUrl() + listFromNewSonarSourceUrl())
-    .findAll { it!=null }.sort { o1,o2 ->
-        try {
-            def v1 = new VersionNumber(o1.id)
-            try {
-                new VersionNumber(o2.id).compareTo(v1)
-            } catch (IllegalArgumentException _2) {
-                -1
-            }
-        } catch (IllegalArgumentException _1) {
-            try {
-                new VersionNumber(o2.id)
-                1
-            } catch (IllegalArgumentException _2) {
-                o2.id.compareTo(o1.id)
-            }
-        }
-    }
+    return listFromSonarSourceBinaries().sort { o1, o2 -> new VersionNumber(o2.id).compareTo(new VersionNumber(o1.id)) }
 }
 
 def store(key,o) {
@@ -100,4 +41,3 @@ def store(key,o) {
 }
 
 store("hudson.plugins.sonar.SonarRunnerInstaller", listAll())
-
